@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "private": false,
   "scripts": {
-    "start": "node ./bin/www",
+    "start": "nodemon ./bin/www",
     "test": "mocha --recursive -S -R spec"
   },
   "repository": {
@@ -26,13 +26,13 @@
   "homepage": "http://witnesskingtides.azurewebsites.net",
   "dependencies": {
     "express": "~4.2.x",
-    "static-favicon": "~1.0.x",
     "morgan": "~1.0.x",
     "body-parser": "~1.0.x",
     "debug": "~0.7.x",
-    "jade": "~1.3.x",
     "flickrapi": "~0.3.x",
-    "cors": "~2.3.x"
+    "cors": "~2.3.x",
+    "mongoose": "~3.8.x",
+    "multiparty": "latest"
   },
   "devDependencies": {
     "mocha": "~1.18.x",
