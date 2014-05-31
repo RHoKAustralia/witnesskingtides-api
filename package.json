@@ -32,7 +32,8 @@
     "flickrapi": "~0.3.x",
     "cors": "~2.3.x",
     "mongoose": "~3.8.x",
-    "multiparty": "latest"
+    "multiparty": "latest",
+    "nconf": "latest"
   },
   "devDependencies": {
     "mocha": "~1.18.x",
