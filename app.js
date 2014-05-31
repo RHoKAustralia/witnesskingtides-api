@@ -12,9 +12,8 @@ var app = express();
 
 mongoose.connect(conf.get('MONGO_URL'));
 
-// app.use(cors());
 app.use(logger('dev'));
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '10mb'}));
 app.use(bodyParser.urlencoded());
 
 app.use('/', routes);

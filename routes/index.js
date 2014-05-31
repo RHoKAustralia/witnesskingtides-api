@@ -72,7 +72,12 @@ router.get('/submissions', function (req, res) {
 });
 
 router.post('/upload', function (req, res) {
-  new Uploader().go(req, res);
+  var uploader = new Uploader();
+  if (req.get('Content-Type') === 'application/json') {
+    uploader.handleJson(req, res);
+  } else {
+    uploader.handleMultipart(req, res);
+  }
 });
 
 module.exports = router;

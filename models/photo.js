@@ -16,6 +16,12 @@ var photoSchema = new Schema({
   flickrUrl: {
     type: String
   },
+  latitude: {
+    type: String
+  },
+  longitude: {
+    type: String
+  },
   user: {
     type: Schema.Types.ObjectId,
     ref: 'users'
