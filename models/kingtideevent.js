@@ -22,7 +22,7 @@ var kingTideEventSchema = new Schema({
   },
   longitude: {
     type: Number
-  },
+  }
 });
 
 //registered on mongoose models
