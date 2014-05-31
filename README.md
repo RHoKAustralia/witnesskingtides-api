@@ -11,8 +11,10 @@ Setup
 Create a file named `config.json` and add the following content:
 
     {
-      "mongo": {
-        "url": "mongodb://user:pwd@host/db"
-      }
+      "MONGO_URL": "mongodb://user:pwd@host:10001/db",
+      "FLICKR_KEY": "flickr_api_key",
+      "FLICKR_SECRET": "flickr_shared_secret",
+      "FLICKR_OAUTH_KEY": "flickr_oauth_key",
+      "FLICKR_OAUTH_SECRET": "flickr_oauth_secret"
     }
 

@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "private": false,
   "scripts": {
-    "start": "nodemon ./bin/www",
+    "start": "node ./bin/www",
     "test": "mocha --recursive -S -R spec"
   },
   "repository": {
@@ -33,8 +33,7 @@
     "mongoose": "~3.8.x",
     "multiparty": "latest",
     "nconf": "latest",
-    "flickr-with-uploads": "latest",
-    "nodemon": "latest"
+    "flickr-with-uploads": "latest"
   },
   "devDependencies": {
     "mocha": "~1.18.x",
