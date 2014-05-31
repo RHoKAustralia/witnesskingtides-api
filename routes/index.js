@@ -1,4 +1,7 @@
+'use strict';
+
 var express = require('express');
+var Uploader = require('./../lib/uploader');
 var router = express.Router();
 var KingTideEvent = require('./../models/kingtideevent');
 
@@ -36,8 +39,8 @@ router.get('/submissions', function (req, res) {
 
 });
 
-router.post('/submit', function (req, res) {
-
+router.post('/upload', function (req, res) {
+  new Uploader().go(req, res);
 });
 
 module.exports = router;

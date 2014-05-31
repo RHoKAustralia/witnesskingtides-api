@@ -1,14 +1,19 @@
+'use strict';
+
 var mongoose = require('mongoose'),
   Schema = mongoose.Schema;
 
 var userSchema = new Schema({
-  idUser: {
+  email: {
     type: String
   },
-  username: {
+  firstName: {
+    type: String
+  },
+  lastName: {
     type: String
   }
 });
 
 //registered on mongoose models
-module.exports = mongoose.model('user', userSchema);
+module.exports = mongoose.model('users', userSchema);

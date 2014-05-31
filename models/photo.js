@@ -1,14 +1,26 @@
+'use strict';
+
 var mongoose = require('mongoose'),
   Schema = mongoose.Schema;
 
 var photoSchema = new Schema({
-  idUser: {
+  description: {
     type: String
   },
-  username: {
+  submitted: {
+    type: Date
+  },
+  flickrId: {
     type: String
+  },
+  flickrUrl: {
+    type: String
+  },
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: 'users'
   }
 });
 
 //registered on mongoose models
-module.exports = mongoose.model('photo', photoSchema);
+module.exports = mongoose.model('photos', photoSchema);
