@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var KingTideEvent = require('./../models/kingtideevent');
 
 router.get('/', function (req, res) {
   var endpoints = {
@@ -22,22 +23,12 @@ router.get('/', function (req, res) {
 });
 
 router.get('/tides', function (req, res) {
-  
-});
-
-router.post('/tides', function (req, res) {
-  event = new KingTideEventSchema ({
-          location: req.params['location'],
-          state: req.params['state'],
-          highTideOccurs: req.params['highTideOccurs'],
-          eventStart: req.params['eventStart'],
-          eventEnd: req.params['eventEnd'],
-          latitude: req.params['latitude'],
-          longitude: req.params['longitude'],
-        });
-        
-  event.save(function(){
-    res.send(201, value);
+  KingTideEvent.find({}, function (err, events) {
+    var eventMap = {};
+    events.forEach(function(event) {
+        eventMap[event._id] = event;
+    });
+    res.send(200, eventMap);  
   });
 });
 

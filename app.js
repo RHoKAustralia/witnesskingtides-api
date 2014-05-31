@@ -6,6 +6,7 @@ var bodyParser = require('body-parser');
 var conf = require('./lib/config');
 
 var routes = require('./routes/index');
+var privateroutes = require('./routes/private');
 
 var app = express();
 
@@ -17,6 +18,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 
 app.use('/', routes);
+app.use('/', privateroutes);
 
 /// catch 404 and forward to error handler
 app.use(function (req, res, next) {
