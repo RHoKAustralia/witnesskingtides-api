@@ -10,7 +10,7 @@ var privateroutes = require('./routes/private');
 
 var app = express();
 
-mongoose.connect(conf.get('mongo:url'));
+mongoose.connect(conf.get('MONGO_URL'));
 
 // app.use(cors());
 app.use(logger('dev'));
