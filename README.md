@@ -5,3 +5,14 @@ kingtides-api
 =============
 
 API for Wave Witness King Tides
+
+Setup
+----
+Create a file named `config.json` and add the following content:
+
+    {
+      "mongo": {
+        "url": "mongodb://user:pwd@host/db"
+      }
+    }
+
