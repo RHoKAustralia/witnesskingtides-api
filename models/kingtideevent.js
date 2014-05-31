@@ -8,6 +8,9 @@ var kingTideEventSchema = new Schema({
   state: {
     type: String
   },
+  description: {
+    type: String
+  },
   highTideOccurs: {
     type: Date
   },
