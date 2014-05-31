@@ -28,5 +28,12 @@ var photoSchema = new Schema({
   }
 });
 
+photoSchema.methods.toJSON = function () {
+  obj = this.toObject();
+  delete obj._id;
+  delete obj.__v;
+  return obj;
+};
+
 //registered on mongoose models
 module.exports = mongoose.model('photos', photoSchema);

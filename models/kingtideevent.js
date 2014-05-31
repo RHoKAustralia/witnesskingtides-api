@@ -1,3 +1,5 @@
+'use strict';
+
 var mongoose = require('mongoose'),
   Schema = mongoose.Schema;
 
@@ -28,7 +30,7 @@ var kingTideEventSchema = new Schema({
   }
 });
 
-kingTideEventSchema.methods.toJSON = function() {
+kingTideEventSchema.methods.toJSON = function () {
   obj = this.toObject();
   delete obj._id;
   delete obj.__v;

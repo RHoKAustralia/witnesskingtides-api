@@ -1,3 +1,5 @@
+'use strict';
+
 var express = require('express');
 var mongoose = require('mongoose');
 var cors = require('cors');
@@ -13,7 +15,9 @@ var app = express();
 mongoose.connect(conf.get('MONGO_URL'));
 
 app.use(logger('dev'));
-app.use(bodyParser.json({limit: '10mb'}));
+app.use(bodyParser.json({
+  limit: '10mb'
+}));
 app.use(bodyParser.urlencoded());
 
 app.use('/', routes);
