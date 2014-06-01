@@ -6,6 +6,8 @@ kingtides-api
 
 API for Wave Witness King Tides
 
+[![NPM](https://nodei.co/npm/kingtides-api.png)](https://nodei.co/npm/kingtides-api/)
+
 Setup
 ----
 Create a file named `config.json` and add the following content:
