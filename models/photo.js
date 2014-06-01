@@ -22,6 +22,9 @@ var photoSchema = new Schema({
   longitude: {
     type: String
   },
+  uploadStatus: {
+    type: String
+  },
   user: {
     type: Schema.Types.ObjectId,
     ref: 'users'
