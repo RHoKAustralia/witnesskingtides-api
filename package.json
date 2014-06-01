@@ -7,7 +7,7 @@
     "kingtides": "./bin/www"
   },
   "scripts": {
-    "start": "nodemon ./bin/www",
+    "start": "node ./bin/www",
     "test": "mocha --recursive -S -R spec"
   },
   "repository": {
