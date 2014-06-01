@@ -132,4 +132,12 @@ router.post('/upload', function (req, res) {
 
 });
 
+router.get('/upload/:id', function (req, res) {
+	console.log(req.params);
+	Photo.findById(req.params['id'], function (err, data) { 		
+		res.json(data);
+	});	
+});
+
+
 module.exports = router;
