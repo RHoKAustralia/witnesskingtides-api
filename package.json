@@ -26,7 +26,8 @@
   "homepage": "http://witnesskingtides.azurewebsites.net",
   "dependencies": {
     "express": "~4.2.x",
-    "morgan": "~1.0.x",
+    "winston": "~0.7.x",
+    "express-winston": "~0.2.x",
     "body-parser": "~1.0.x",
     "debug": "~0.7.x",
     "cors": "~2.3.x",

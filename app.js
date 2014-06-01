@@ -3,12 +3,14 @@
 var express = require('express');
 var mongoose = require('mongoose');
 var cors = require('cors');
-var logger = require('morgan');
+var winston = require('winston');
+var expressWinston = require('express-winston');
 var bodyParser = require('body-parser');
 var conf = require('./lib/config');
 
 var routes = require('./routes/index');
 var privateroutes = require('./routes/private');
+var healtcheckroutes = require('./routes/health');
 
 var app = express();
 
@@ -20,14 +22,27 @@ var corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.use(logger('dev'));
 app.use(bodyParser.json({
   limit: '10mb'
 }));
+
 app.use(bodyParser.urlencoded());
+
+app.use(expressWinston.logger({
+  transports: [
+    new winston.transports.Console()
+  ]
+}));
 
 app.use('/', routes);
 app.use('/', privateroutes);
+// app.use('/healtcheck', healtcheckroutes);
+
+app.use(expressWinston.errorLogger({
+  transports: [
+    new winston.transports.Console()
+  ]
+}));
 
 /// catch 404 and forward to error handler
 app.use(function (req, res, next) {
