@@ -10,7 +10,7 @@ var conf = require('./lib/config');
 
 var routes = require('./routes/index');
 var privateroutes = require('./routes/private');
-var healtcheckroutes = require('./routes/health');
+// var healtcheckroutes = require('./routes/health');
 
 var app = express();
 
