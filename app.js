@@ -14,6 +14,12 @@ var app = express();
 
 mongoose.connect(conf.get('MONGO_URL'));
 
+var corsOptions = {
+  origin: 'http://witnesskingtides.azurewebsites.net',
+  methods: ['GET', 'PUT', 'POST']
+};
+
+app.use(cors(corsOptions));
 app.use(logger('dev'));
 app.use(bodyParser.json({
   limit: '10mb'
