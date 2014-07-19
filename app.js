@@ -16,8 +16,15 @@ var app = express();
 
 mongoose.connect(conf.get('MONGO_URL'));
 
+var corsWhitelist = [
+  'http://witnesskingtides.azurewebsites.net',
+  'https://rhok-melbourne.github.io'
+];
 var corsOptions = {
-  origin: 'http://witnesskingtides.azurewebsites.net',
+  origin: function (origin, cb) {
+    var allowed = corsWhitelist.indexOf(origin) >= 0;
+    cb(null, allowed);
+  },
   methods: ['GET', 'PUT', 'POST']
 };
 
