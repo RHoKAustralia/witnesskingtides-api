@@ -3,8 +3,15 @@
 var express = require('express');
 var Uploader = require('./../lib/uploader');
 var router = express.Router();
-var KingTideEvent = require('./../models/kingtideevent');
 var Photo = require('./../models/photo');
+
+var requireController = function(name) {
+  return require('../controllers/' + name);
+};
+var controllers = {
+  tide_events: requireController('tide_events'),
+  //photos:      requireController('photos')
+};
 
 router.get('/', function (req, res) {
   var endpoints = {
@@ -27,86 +34,41 @@ router.get('/', function (req, res) {
 });
 
 router.get('/tides', function (req, res) {
-  KingTideEvent.find({}, function (err, events) {
-    var eventMap = [];
-    events.forEach(function (event) {
-      eventMap.push({
-        "id": event._id,
-        "event": event
-      });
-    });
-    res.send(200, eventMap);
-  });
+  controllers.tide_events.getAllTideEvents(res);
 });
 
 router.get('/tides/future/:date?', function (req, res) {
-  var when = req.params['date'] || new Date;
-  kingTideEvent.find({
-    eventStart: {
-      $gte: when
-    }
-  }, function (err, events) {
-    var eventMap = [];
-    events.forEach(function (event) {
-      eventMap.push({
-        "id": event._id,
-        "event": event
-      });
-    });
-    res.send(200, eventMap);
-  });
+  var when = req.params.date || new Date;
+  controllers.tide_events.getFutureTideEvents(res, when);
 });
 
 router.get('/tides/current', function (req, res) {
-  var now = new Date;
-  kingTideEvent.find({
-    eventStart: {
-      $lte: now
-    },
-    eventEnd: {
-      $gte: now
-    }
-  }, function (err, events) {
-    var eventMap = [];
-    events.forEach(function (event) {
-      eventMap.push({
-        "id": event._id,
-        "event": event
-      });
-    });
-    res.send(200, eventMap);
-  });
+  controllers.tide_events.getCurrentTideEvents(res);
 });
 
 router.get('/tides/:id', function (req, res) {
-  kingTideEvent.findOne({
-    '_id': req.params['id']
-  }, function (err, event) {
-    if (event == null)
-      res.send(404);
-    else
-      res.send(200, event);
-  });
+  var tideId = req.params.id;
+  controllers.tide_events.getTide(res, tideId);
 });
 
 
-router.get('/submissions', function (req, res) {
+router.get('/photos', function (req, res) {
   Photo.find({
-    'user': {
+    user: {
       '$ne': null
     }
   })
-    .populate('user', null, {
-      email: {
-        $in: [req.query.email]
-      }
-    })
+  .populate('user', null, {
+    email: {
+      '$in': [req.query.email]
+    }
+  })
   //.populate('user')
   //.where('user.email').in(['tarcio@mail.com'])  //not working
   .exec(function (err, docs) {
     if (!docs) {
       res.json({
-        'msg': 'no photos with ' + req.query.email
+        msg: 'no photos with ' + req.query.email
       });
       return;
     }
@@ -133,10 +95,10 @@ router.post('/upload', function (req, res) {
 });
 
 router.get('/upload/:id', function (req, res) {
-	console.log(req.params);
-	Photo.findById(req.params['id'], function (err, data) { 		
-		res.json(data);
-	});	
+  console.log(req.params);
+  Photo.findById(req.params['id'], function (err, data) {
+  res.json(data);
+  });
 });
 
 
