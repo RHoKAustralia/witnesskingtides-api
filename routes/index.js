@@ -10,7 +10,7 @@ var requireController = function(name) {
 };
 var controllers = {
   tide_events: requireController('tide_events'),
-  //photos:      requireController('photos')
+  photos:      requireController('photos')
 };
 
 
