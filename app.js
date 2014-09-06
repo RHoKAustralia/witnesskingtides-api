@@ -8,6 +8,7 @@ var bodyParser = require('body-parser');
 var conf = require('./lib/config');
 
 var routes = require('./routes/index');
+var docs = require('./routes/docs');
 var privateroutes = require('./routes/private');
 var healthcheckroutes = require('./routes/health');
 
@@ -20,15 +21,9 @@ app.use(bodyParser.json({
 }));
 
 app.use(bodyParser.urlencoded());
-
-app.use(expressWinston.logger({
-  transports: [
-    new winston.transports.Console()
-  ]
-}));
-
 app.use('/', routes);
 app.use('/', privateroutes);
+app.use('/docs', docs);
 app.use('/health', healthcheckroutes);
 
 app.use(expressWinston.logger({
@@ -69,6 +64,5 @@ app.use(function (err, req, res, next) {
     error: {}
   });
 });
-
 
 module.exports = app;
