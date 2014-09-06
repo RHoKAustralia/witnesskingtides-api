@@ -2,7 +2,6 @@
 
 var express = require('express');
 var router = express.Router();
-var cors = require('cors');
 var winston = require('winston');
 var conf = require('../lib/config');
 
@@ -39,23 +38,7 @@ router.get('/photos', function (req, res) {
   controllers.photos.getAllPhotos(res, email);
 });
 
-var corsWhitelist = conf.get('WKT_CORS_WHITELIST').split(',').map(function(val) {
-  return val.replace(/\\/gi, '');
-});
-
-winston.info('Whitelist: ' + corsWhitelist);
-
-var corsOptions = {
-  origin: function (origin, cb) {
-    var originAllowed = corsWhitelist.indexOf(origin) !== -1;
-    var errorMsg = originAllowed ? null : 'You are not allowed to execute this request.';
-    cb(errorMsg, {
-      origin: originAllowed
-    });
-  }
-};
-
-router.post('/photos', cors(corsOptions), function (req, res) {
+router.post('/photos', function (req, res) {
   var contentType = req.get('Content-Type');
   controllers.photos.uploadPhoto(res, contentType);
 });

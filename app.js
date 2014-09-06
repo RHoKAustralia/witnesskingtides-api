@@ -6,6 +6,7 @@ var winston = require('winston');
 var expressWinston = require('express-winston');
 var bodyParser = require('body-parser');
 var conf = require('./lib/config');
+var cors = require('cors');
 
 var routes = require('./routes/index');
 var docs = require('./routes/docs');
@@ -14,12 +15,29 @@ var healthcheckroutes = require('./routes/health');
 
 var app = express();
 
+var corsWhitelist = conf.get('WKT_CORS_WHITELIST').split(',').map(function(val) {
+  return val.replace(/\\/gi, '');
+});
+
+winston.info('Whitelist: ' + corsWhitelist);
+
+var corsOptions = {
+  origin: function (origin, cb) {
+    var originAllowed = corsWhitelist.indexOf(origin) !== -1;
+    var errorMsg = originAllowed ? null : 'You are not allowed to execute this request.';
+    cb(errorMsg, {
+      origin: originAllowed
+    });
+  }
+};
+
 mongoose.connect(conf.get('MONGO_URL'));
 
 app.use(bodyParser.json({
   limit: '10mb'
 }));
 
+app.use(cors(corsOptions));
 app.use(bodyParser.urlencoded());
 app.use('/', routes);
 app.use('/', privateroutes);
