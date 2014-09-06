@@ -28,8 +28,7 @@ app.use('/health', healthcheckroutes);
 
 app.use(expressWinston.logger({
   transports: [
-    new winston.transports.File({
-      filename: '/tmp/kingtides.log',
+    new winston.transports.Console({
       json: true
     })
   ]

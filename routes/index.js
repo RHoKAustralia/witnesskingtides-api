@@ -3,17 +3,18 @@
 var express = require('express');
 var router = express.Router();
 var cors = require('cors');
+var winston = require('winston');
 var conf = require('../lib/config');
 
 var requireController = function (name) {
   return require('../controllers/' + name);
 };
+
 var controllers = {
   tide_events: requireController('tide_events'),
   photos: requireController('photos'),
   flickr: requireController('flickr')
 };
-
 
 router.get('/tide_events', function (req, res) {
   controllers.tide_events.getAllTideEvents(res);
@@ -42,10 +43,13 @@ var corsWhitelist = conf.get('WKT_CORS_WHITELIST').split(',').map(function(val) 
   return val.replace(/\\/gi, '');
 });
 
+winston.info('Whitelist: ' + corsWhitelist);
+
 var corsOptions = {
   origin: function (origin, cb) {
-    var originAllowed = corsWhitelist.indexOf(origin) >= 0;
+    var originAllowed = corsWhitelist.indexOf(origin) !== -1;
     var errorMsg = originAllowed ? null : 'You are not allowed to execute this request.';
+    winston.info('Allowing? ' + originAllowed);
     cb(errorMsg, {
       origin: originAllowed
     });
