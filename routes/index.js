@@ -49,7 +49,6 @@ var corsOptions = {
   origin: function (origin, cb) {
     var originAllowed = corsWhitelist.indexOf(origin) !== -1;
     var errorMsg = originAllowed ? null : 'You are not allowed to execute this request.';
-    winston.info('Allowing? ' + originAllowed);
     cb(errorMsg, {
       origin: originAllowed
     });
