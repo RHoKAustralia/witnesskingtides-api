@@ -37,7 +37,8 @@
     "mongoose": "~3.8.x",
     "multiparty": "latest",
     "nconf": "latest",
-    "flickr-with-uploads": "latest"
+    "flickr-with-uploads": "latest",
+    "flickr-api": "latest"
   },
   "devDependencies": {
     "mocha": "~1.18.x",
