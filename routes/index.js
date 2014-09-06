@@ -13,41 +13,21 @@ var controllers = {
   //photos:      requireController('photos')
 };
 
-// TODO: invert this for REST
-router.get('/', function(req, res) {
-  var endpoints = {
-    GET: {
-      '/tides': {
-        description: 'Get all king wave tide locations'
-      },
-      '/photos': {
-        params: ['email'],
-        description: 'Get all king wave tide locations'
-      }
-    },
-    POST: {
-      '/upload': {
-        description: 'Upload a photos'
-      }
-    }
-  };
-  res.json(endpoints);
-});
 
-router.get('/tides', function(req, res) {
+router.get('/tide_events', function(req, res) {
   controllers.tide_events.getAllTideEvents(res);
 });
 
-router.get('/tides/future/:date?', function(req, res) {
+router.get('/tide_events/future/:date?', function(req, res) {
   var when = req.params.date || new Date;
   controllers.tide_events.getFutureTideEvents(res, when);
 });
 
-router.get('/tides/current', function(req, res) {
+router.get('/tide_events/current', function(req, res) {
   controllers.tide_events.getCurrentTideEvents(res);
 });
 
-router.get('/tides/:id', function(req, res) {
+router.get('/tide_events/:id', function(req, res) {
   var tideId = req.params.id;
   controllers.tide_events.getTide(res, tideId);
 });
@@ -77,6 +57,69 @@ router.get('/photos/:id', function(req, res) {
 
   var id = req.params.id;
   controllers.photos.getPhoto(res, id);
+});
+
+// docs
+router.get('/', function(req, res) {
+  var endpoints = {
+    '/tide_events': {
+      actions: [
+        {
+          method: 'GET',
+          description: 'Get all king tide locations'
+        }
+      ],
+      children: {
+        '/:id': {
+          actions: [
+            {
+              method: 'GET',
+              description: 'Get details for one king tide event'
+            }
+          ]
+        },
+        '/future': {
+          actions: [
+            {
+              method: 'GET',
+              description: 'Get king tide locations in the future'
+            }
+          ]
+        },
+        '/current': {
+          actions: [
+            {
+              method: 'GET',
+              description: 'Get current king tide locations'
+            }
+          ]
+        },
+      }
+    },
+
+    '/photos': {
+      actions: [
+        {
+          method: 'GET',
+          description: 'Get all photos'
+        }, {
+          method: 'POST',
+          description: 'Upload a photo'
+        }
+      ],
+      children: {
+        '/:id': {
+          actions: [
+            {
+              method: 'GET',
+              description: 'Get status of a photo upload'
+            }
+          ]
+        }
+      }
+    }
+  };
+  res.json(endpoints);
 });
 
 module.exports = router;
