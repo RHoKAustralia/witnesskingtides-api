@@ -9,7 +9,7 @@ var conf = require('./lib/config');
 
 var routes = require('./routes/index');
 var privateroutes = require('./routes/private');
-// var healtcheckroutes = require('./routes/health');
+var healthcheckroutes = require('./routes/health');
 
 var app = express();
 
@@ -29,7 +29,7 @@ app.use(expressWinston.logger({
 
 app.use('/', routes);
 app.use('/', privateroutes);
-// app.use('/healtcheck', healtcheckroutes);
+app.use('/health', healthcheckroutes);
 
 app.use(expressWinston.logger({
   transports: [
