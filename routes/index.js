@@ -72,7 +72,7 @@ router.post('/photos', cors(corsOptions), function(req, res) {
   controllers.photos.uploadPhoto(res, contentType);
 });
 
-router.get('/upload/:id', function(req, res) {
+router.get('/photos/:id', function(req, res) {
   console.log(req.params);
 
   var id = req.params.id;
