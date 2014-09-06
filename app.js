@@ -31,9 +31,12 @@ app.use('/', routes);
 app.use('/', privateroutes);
 // app.use('/healtcheck', healtcheckroutes);
 
-app.use(expressWinston.errorLogger({
+app.use(expressWinston.logger({
   transports: [
-    new winston.transports.Console()
+    new winston.transports.File({
+      filename: '/tmp/kingtides.log',
+      json: true
+    })
   ]
 }));
 
