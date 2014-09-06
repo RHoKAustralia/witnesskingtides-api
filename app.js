@@ -21,26 +21,25 @@ app.use(bodyParser.json({
   limit: '10mb'
 }));
 
-var corsWhitelist = conf.get('WKT_CORS_WHITELIST').split(',').map(function(val) {
-  return val.replace(/\\/gi, '');
-});
+// var corsWhitelist = conf.get('WKT_CORS_WHITELIST').split(',').map(function(val) {
+//   return val.replace(/\\/gi, '');
+// });
 
-winston.info(corsWhitelist);
+// winston.info(corsWhitelist);
 
-var corsOptions = {
-  origin: function (origin, cb) {
-    var originAllowed = corsWhitelist.indexOf(origin) !== -1;
-    var errorMsg = originAllowed ? null : 'You are not allowed to execute this request.';
-    cb(errorMsg, { origin: originAllowed });
-    return origin;
-  }
-};
+// var corsOptions = {
+//   origin: function (origin, cb) {
+//     var originAllowed = corsWhitelist.indexOf(origin) !== -1;
+//     var errorMsg = originAllowed ? null : 'You are not allowed to execute this request.';
+//     cb(errorMsg, { origin: originAllowed });
+//     return origin;
+//   }
+// };
 
-var corsObj = cors(corsOptions);
+var corsOptions = { origin: conf.get('WKT_CORS_WHITELIST').replace(/\\/gi, '') };
+app.options('*', cors(corsOptions));
+app.use(cors(corsOptions));
 
-app.options('*', corsObj);
-
-app.use(corsObj);
 app.use(bodyParser.urlencoded());
 app.use('/', routes);
 app.use('/', privateroutes);
