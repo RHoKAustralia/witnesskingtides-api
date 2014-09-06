@@ -97,8 +97,7 @@ var corsOptions = {
     cb(errorMsg, {
       origin: originVal
     });
-  },
-  methods: ['POST']
+  }
 };
 
 router.post('/upload', cors(corsOptions), function (req, res) {
