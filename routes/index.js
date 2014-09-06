@@ -4,8 +4,9 @@ var express = require('express');
 var Uploader = require('./../lib/uploader');
 var router = express.Router();
 var Photo = require('./../models/photo');
+var cors = require('cors');
 
-var requireController = function(name) {
+var requireController = function (name) {
   return require('../controllers/' + name);
 };
 var controllers = {
@@ -58,11 +59,11 @@ router.get('/photos', function (req, res) {
       '$ne': null
     }
   })
-  .populate('user', null, {
-    email: {
-      '$in': [req.query.email]
-    }
-  })
+    .populate('user', null, {
+      email: {
+        '$in': [req.query.email]
+      }
+    })
   //.populate('user')
   //.where('user.email').in(['tarcio@mail.com'])  //not working
   .exec(function (err, docs) {
@@ -84,22 +85,36 @@ router.get('/photos', function (req, res) {
   });
 });
 
-router.post('/upload', function (req, res) {
+var corsWhitelist = ['https://rhok-melbourne.github.io'];
+var corsOptions = {
+  origin: function (origin, cb) {
+    var errorMsg = null,
+      originVal = true;
+    if (corsWhitelist.indexOf(origin) < 0) {
+      errorMsg = 'You are not allowed to execute this request.';
+      originVal = false;
+    }
+    cb(errorMsg, {
+      origin: originVal
+    });
+  },
+  methods: ['POST']
+};
+
+router.post('/upload', cors(corsOptions), function (req, res) {
   var uploader = new Uploader();
   if (req.get('Content-Type').indexOf('json') >= 0) {
     uploader.handleJson(req, res);
   } else {
     uploader.handleMultipart(req, res);
   }
-
 });
 
 router.get('/upload/:id', function (req, res) {
   console.log(req.params);
   Photo.findById(req.params['id'], function (err, data) {
-  res.json(data);
+    res.json(data);
   });
 });
-
 
 module.exports = router;

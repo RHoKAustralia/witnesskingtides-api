@@ -2,7 +2,6 @@
 
 var express = require('express');
 var mongoose = require('mongoose');
-var cors = require('cors');
 var winston = require('winston');
 var expressWinston = require('express-winston');
 var bodyParser = require('body-parser');
@@ -16,22 +15,6 @@ var app = express();
 
 mongoose.connect(conf.get('MONGO_URL'));
 
-var corsWhitelist = ['https://rhok-melbourne.github.io'];
-var corsOptions = {
-  origin: function (origin, cb) {
-    var errorMsg = null,
-      originVal = true;
-    if (corsWhitelist.indexOf(origin) < 0) {
-      errorMsg = 'You are not allowed to execute this request.';
-      originVal = false;
-    }
-    cb(errorMsg, {
-      origin: originVal
-    });
-  },
-  methods: ['POST']
-};
-
 app.use(bodyParser.json({
   limit: '10mb'
 }));
@@ -43,8 +26,6 @@ app.use(expressWinston.logger({
     new winston.transports.Console()
   ]
 }));
-
-app.use(cors(corsOptions));
 
 app.use('/', routes);
 app.use('/', privateroutes);
@@ -64,7 +45,6 @@ app.use(function (req, res, next) {
 });
 
 /// error handlers
-
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
