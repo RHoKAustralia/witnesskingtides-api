@@ -65,6 +65,4 @@ app.use(function (err, req, res, next) {
   });
 });
 
-console.log(conf.stores.env);
-
 module.exports = app;

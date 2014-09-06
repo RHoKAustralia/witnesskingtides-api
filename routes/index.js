@@ -38,7 +38,10 @@ router.get('/photos', function (req, res) {
   controllers.photos.getAllPhotos(res, email);
 });
 
-var corsWhitelist = conf.get('WKT_CORS_WHITELIST');
+var corsWhitelist = conf.get('WKT_CORS_WHITELIST').split(',').map(function(val) {
+  return val.replace(/\\/gi, '');
+});
+
 var corsOptions = {
   origin: function (origin, cb) {
     var originAllowed = corsWhitelist.indexOf(origin) >= 0;
