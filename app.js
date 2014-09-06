@@ -29,11 +29,10 @@ winston.info(corsWhitelist);
 
 var corsOptions = {
   origin: function (origin, cb) {
-    console.log(origin);
     var originAllowed = corsWhitelist.indexOf(origin) !== -1;
-    console.log(originAllowed);
     var errorMsg = originAllowed ? null : 'You are not allowed to execute this request.';
     cb(errorMsg, { origin: originAllowed });
+    return origin;
   }
 };
 
