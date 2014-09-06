@@ -15,6 +15,19 @@ var app = express();
 
 mongoose.connect(conf.get('MONGO_URL'));
 
+<<<<<<< Updated upstream
+=======
+var corsWhitelist = conf.get('WKT_CORS_WHITELIST');
+var corsOptions = {
+  origin: function (origin, cb) {
+    var allowed = corsWhitelist.indexOf(origin) >= 0;
+    cb(null, allowed);
+  },
+  methods: ['GET', 'PUT', 'POST']
+};
+
+app.use(cors(corsOptions));
+>>>>>>> Stashed changes
 app.use(bodyParser.json({
   limit: '10mb'
 }));
