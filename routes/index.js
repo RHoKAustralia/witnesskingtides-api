@@ -5,6 +5,7 @@ var Uploader = require('./../lib/uploader');
 var router = express.Router();
 var Photo = require('./../models/photo');
 var cors = require('cors');
+var conf = require('../lib/config');
 
 var requireController = function (name) {
   return require('../controllers/' + name);
@@ -85,7 +86,7 @@ router.get('/photos', function (req, res) {
   });
 });
 
-var corsWhitelist = ['https://rhok-melbourne.github.io'];
+var corsWhitelist = conf.get('WKT_CORS_WHITELIST');
 var corsOptions = {
   origin: function (origin, cb) {
     var errorMsg = null,
