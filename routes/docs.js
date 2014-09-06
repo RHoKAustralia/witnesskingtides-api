@@ -1,58 +1,54 @@
 var express = require('express');
 var router = express.Router();
 
+var buildEndpoint = function(actions, children) {
+  var endpoint = {
+    'actions': actions
+  };
+  if (children) {
+    endpoint.children = children
+  }
+  return endpoint;
+};
+
+var buildAction = function(method, description, params) {
+  var action = {
+    'method': method,
+    'description': description
+  };
+  if (params) {
+    action.params = params;
+  }
+  return action;
+};
+
 router.get('/', function (req, res) {
   var endpoints = {
-    '/tide_events': {
-      actions: [{
-        method: 'GET',
-        description: 'Get all king tide locations'
-      }],
-      children: {
-        '/:id': {
-          actions: [{
-            method: 'GET',
-            description: 'Get details for one king tide event'
-          }]
-        },
-        '/future': {
-          actions: [{
-            method: 'GET',
-            description: 'Get king tide locations in the future'
-          }]
-        },
-        '/current': {
-          actions: [{
-            method: 'GET',
-            description: 'Get current king tide locations'
-          }]
-        },
-      }
-    },
+    '/tide_events': buildEndpoint([
+      buildAction('GET', 'Get all king tide locations')
+    ], {
+      '/:id': buildEndpoint([
+        buildAction('GET', 'Get details for one king tide event')
+      ]),
+      '/future': buildEndpoint([
+        buildAction('GET', 'Get king tide locations in the future')
+      ]),
+      '/current': buildEndpoint([
+        buildAction('GET', 'Get current king tide locations')
+      ])
+    }),
 
-    '/photos': {
-      actions: [{
-        method: 'GET',
-        description: 'Get all photos'
-      }, {
-        method: 'POST',
-        description: 'Upload a photo'
-      }],
-      children: {
-        '/search': {
-          actions: [{
-            method: 'GET',
-            description: 'Search for photos in FlickR.'
-          }]
-        },
-        '/:id': {
-          actions: [{
-            method: 'GET',
-            description: 'Get status of a photo upload'
-          }]
-        }
-      }
-    }
+    '/photos': buildEndpoint([
+      buildAction('GET', 'Get all photos'),
+      buildAction('POST', 'Upload a photo')
+    ], {
+      '/search': buildEndpoint([
+        buildAction('GET', 'Search for photos in FlickR.')
+      ]),
+      '/:id': buildEndpoint([
+        buildAction('GET', 'Get status of a photo upload')
+      ])
+    })
   };
   res.json(endpoints);
 });
