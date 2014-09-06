@@ -16,19 +16,22 @@ var app = express();
 
 mongoose.connect(conf.get('MONGO_URL'));
 
-var corsWhitelist = [
-  'http://witnesskingtides.azurewebsites.net',
-  'https://rhok-melbourne.github.io'
-];
+var corsWhitelist = ['https://rhok-melbourne.github.io'];
 var corsOptions = {
   origin: function (origin, cb) {
-    var allowed = corsWhitelist.indexOf(origin) >= 0;
-    cb(null, allowed);
+    var errorMsg = null,
+      originVal = true;
+    if (corsWhitelist.indexOf(origin) < 0) {
+      errorMsg = 'You are not allowed to execute this request.';
+      originVal = false;
+    }
+    cb(errorMsg, {
+      origin: originVal
+    });
   },
-  methods: ['GET', 'PUT', 'POST']
+  methods: ['POST']
 };
 
-app.use(cors(corsOptions));
 app.use(bodyParser.json({
   limit: '10mb'
 }));
@@ -40,6 +43,8 @@ app.use(expressWinston.logger({
     new winston.transports.Console()
   ]
 }));
+
+app.use(cors(corsOptions));
 
 app.use('/', routes);
 app.use('/', privateroutes);
