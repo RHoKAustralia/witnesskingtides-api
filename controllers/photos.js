@@ -26,7 +26,7 @@ exports.getAllPhotos = function(res, email) {
   });
 };
 
-exports.uploadPhoto = function(res, contentType) {
+exports.uploadPhoto = function(req, res, contentType) {
   var uploader = new Uploader();
   var uploadTypeSuffix = contentType.indexOf('json') >= 0 ? 'Json' : 'Multipart';
   uploader['handle' + uploadTypeSuffix](req, res);

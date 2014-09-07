@@ -40,7 +40,7 @@ router.get('/photos', function (req, res) {
 
 router.post('/photos', function (req, res) {
   var contentType = req.get('Content-Type');
-  controllers.photos.uploadPhoto(res, contentType);
+  controllers.photos.uploadPhoto(req, res, contentType);
 });
 
 router.get('/photos/search', function (req, res) {
