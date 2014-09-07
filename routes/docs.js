@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var cors = require('cors');
 
 var buildEndpoint = function (actions, children) {
   var endpoint = {
