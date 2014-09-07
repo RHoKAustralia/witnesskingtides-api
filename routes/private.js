@@ -2,9 +2,10 @@
 
 var express = require('express');
 var router = express.Router();
+var cors = require('../lib/cors');
 var kingTideEvent = require('./../models/kingtideevent');
 
-router.put('/tides/:id', function (req, res) {
+router.put('/tides/:id', cors, function (req, res) {
   kingTideEvent.findOne({
     '_id': req.params['id']
   }, function (err, event) {
@@ -30,7 +31,7 @@ router.put('/tides/:id', function (req, res) {
   });
 });
 
-router.post('/tides', function (req, res) {
+router.post('/tides', cors, function (req, res) {
   var event = new kingTideEvent({
     location: req.body['location'] || 'Undefined',
     state: req.body['state'] || 'Undefined',
@@ -50,7 +51,7 @@ router.post('/tides', function (req, res) {
   });
 });
 
-router.delete('/tides/:id', function (req, res) {
+router.delete('/tides/:id', cors, function (req, res) {
   kingTideEvent.findOne({
     '_id': req.params['id']
   }, function (err, event) {

@@ -4,6 +4,7 @@ var express = require('express');
 var router = express.Router();
 var winston = require('winston');
 var conf = require('../lib/config');
+var cors = require('../lib/cors');
 
 var requireController = function (name) {
   return require('../controllers/' + name);
@@ -15,35 +16,35 @@ var controllers = {
   flickr: requireController('flickr')
 };
 
-router.get('/tide_events', function (req, res) {
+router.get('/tide_events', cors, function (req, res) {
   controllers.tide_events.getAllTideEvents(res);
 });
 
-router.get('/tide_events/future/:date?', function (req, res) {
+router.get('/tide_events/future/:date?', cors, function (req, res) {
   var when = req.params.date || new Date;
   controllers.tide_events.getFutureTideEvents(res, when);
 });
 
-router.get('/tide_events/current', function (req, res) {
+router.get('/tide_events/current', cors, function (req, res) {
   controllers.tide_events.getCurrentTideEvents(res);
 });
 
-router.get('/tide_events/:id', function (req, res) {
+router.get('/tide_events/:id', cors, function (req, res) {
   var tideId = req.params.id;
   controllers.tide_events.getTide(res, tideId);
 });
 
-router.get('/photos', function (req, res) {
+router.get('/photos', cors, function (req, res) {
   var email = req.query.email;
   controllers.photos.getAllPhotos(res, email);
 });
 
-router.post('/photos', function (req, res) {
+router.post('/photos', cors, function (req, res) {
   var contentType = req.get('Content-Type');
   controllers.photos.uploadPhoto(req, res, contentType);
 });
 
-router.get('/photos/search', function (req, res) {
+router.get('/photos/search', cors, function (req, res) {
   var params = {
     api_key: conf.get('FLICKR_KEY'),
     user_id: conf.get('FLICKR_USER_ID'),
@@ -63,7 +64,7 @@ router.get('/photos/search', function (req, res) {
   controllers.flickr.flickrSearch(res, params);
 });
 
-router.get('/photos/:id', function (req, res) {
+router.get('/photos/:id', cors, function (req, res) {
   var id = req.params.id;
   controllers.photos.getPhoto(res, id);
 });

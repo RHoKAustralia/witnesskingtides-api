@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-var cors = require('cors');
 
 var buildEndpoint = function (actions, children) {
   var endpoint = {
@@ -23,10 +22,7 @@ var buildAction = function (method, description, params) {
   return action;
 };
 
-router.get('/', cors({
-  origin: '*',
-  methods: ['GET']
-}), function (req, res) {
+router.get('/', function (req, res) {
   var endpoints = {
     '/tide_events': buildEndpoint([
       buildAction('GET', 'Get all king tide locations')
