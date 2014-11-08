@@ -26,3 +26,4 @@ node_modules
 
 config.json
 .elasticbeanstalk/
+config-prod.json
