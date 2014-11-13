@@ -2,7 +2,6 @@
 
 var express = require('express');
 var router = express.Router();
-var winston = require('winston');
 var conf = require('../lib/config');
 var cors = require('../lib/cors');
 
@@ -38,6 +37,8 @@ router.get('/photos', cors, function (req, res) {
   var email = req.query.email;
   controllers.photos.getAllPhotos(res, email);
 });
+
+router.options('/photos', cors);
 
 router.post('/photos', cors, function (req, res) {
   var contentType = req.get('Content-Type');
