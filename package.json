@@ -28,22 +28,13 @@
   ],
   "homepage": "http://photos.witnesskingtides.org",
   "dependencies": {
-    "express": "~4.2.x",
-    "winston": "~0.7.x",
-    "express-winston": "~0.2.x",
-    "body-parser": "~1.0.x",
-    "debug": "~0.7.x",
-    "cors": "~2.3.x",
-    "mongoose": "~3.8.x",
+    "express": "^4.2.x",
+    "body-parser": "^1.0.x",
+    "cors": "^2.3.x",
+    "mongoose": "^3.8.x",
     "multiparty": "latest",
     "nconf": "latest",
     "flickr-with-uploads": "latest",
     "flickrapi": "latest"
-  },
-  "devDependencies": {
-    "mocha": "~1.18.x",
-    "sinon": "~1.10.x",
-    "chai": "~1.9.x",
-    "zombie": "^2.0.0-alpha31"
   }
 }

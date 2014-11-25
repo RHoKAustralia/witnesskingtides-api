@@ -10,7 +10,7 @@ var findCb = function(res) {
         'event': event
       };
     });
-    res.send(200, eventMap);
+    res.status(200).send(eventMap);
   };
 };
 
@@ -45,7 +45,7 @@ exports.getTide = function(res, tideId) {
     if (event == null) {
       res.send(404);
     } else {
-      res.send(200, event);
+      res.status(200).send(event);
     }
   });
 };
