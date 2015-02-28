@@ -36,5 +36,11 @@
     "nconf": "latest",
     "flickr-with-uploads": "latest",
     "flickrapi": "latest"
+  },
+  "devDependencies": {
+    "mocha": "~1.18.x",
+    "sinon": "~1.10.x",
+    "chai": "~1.9.x",
+    "zombie": "^2.0.0-alpha31"
   }
 }
