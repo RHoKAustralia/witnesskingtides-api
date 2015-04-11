@@ -14,7 +14,8 @@ def convert_date_range date_range_baloney
   { event_start: Date.strptime(event_start, "%d %B"),
     event_end: Date.strptime(event_end, "%d %B") }
 end
-API_URL = 'http://localhost:3000'; # change depending on server settings
+API_URL = 'http://kingtides-api-env-fubbpjhd29.elasticbeanstalk.com'
+#API_URL = 'http://localhost:3000' # change depending on server settings
 config = JSON.parse(File.read("../config.json"))
 CORS_WHITELISTED_URL = config["WKT_CORS_WHITELIST"].split(",")[0]
 tide_data = JSON.parse(File.read("./tide_data.json"))
