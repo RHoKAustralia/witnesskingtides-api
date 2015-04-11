@@ -18,6 +18,7 @@ var Flickr = require("flickrapi"),
 Flickr.tokenOnly(flickrOptions, function(error, flickr) {
 	if (error) { throw new Error(error) }
 	flickrApi = flickr;
+	console.log("[");
 	getPageOfFlickrPhotosFromUser(1, config.get("FLICKR_USER_ID"));
 });
 
@@ -36,13 +37,15 @@ function getPageOfFlickrPhotosFromUser(page, user) {
 	  		var total_pages = result.photos.pages;
 
 	  		var photos = result.photos.photo;
-	  		if (page < total_pages) {
+			if (page <= total_pages) {
 	  				for (var photo in photos) {						
 						getFlickrPhotoInfo(photos[photo].id);
 					}
 
 	  				getPageOfFlickrPhotosFromUser(++page, user);
 	  		} else {
+				console.log("{\"photo\":\"\"}]");
+
 	  			console.error("Done!");
 	  		}
 	  	}
@@ -52,6 +55,6 @@ function getPageOfFlickrPhotosFromUser(page, user) {
 function getFlickrPhotoInfo(id) {
 	console.error("getting info for photo id: " + id);
 	flickrApi.photos.getInfo( {photo_id: id}, function (err, result) {
-		console.log(JSON.stringify(result));
+		console.log(JSON.stringify(result) + ",");
 	});
 }
