@@ -13,10 +13,38 @@ Setup
 Create a file named `config.json` and add the following content:
 
     {
-      "MONGO_URL": "mongodb://user:pwd@host:10001/db",
-      "FLICKR_KEY": "flickr_api_key",
-      "FLICKR_SECRET": "flickr_shared_secret",
-      "FLICKR_OAUTH_KEY": "flickr_oauth_key",
-      "FLICKR_OAUTH_SECRET": "flickr_oauth_secret"
+	  "MONGO_URL": "mongodb://user:pwd@localhost:27017/db",
+	  "FLICKR_KEY": "flickr_api_key",
+	  "FLICKR_SECRET": "flickr_shared_secret",
+	  "FLICKR_USER_ID":"",
+	  "FLICKR_OAUTH_KEY":"",
+	  "FLICKR_OAUTH_SECRET":"",
+	  "WKT_CORS_WHITELIST": "http://localhost"
     }
+
+Install dependencies
+
+    npm install
+
+Authorize Flickr
+----
+To get values FLICKR_USER_ID / FLICKR_OAUTH_KEY / FLICKR_OAUTH_SECRET
+
+	node scripts/flickr_auth.js
+
+Follow instructions and update config.json based on output
+
+Test Flickr Upload
+-----
+After updating FLICKR_USER_ID / FLICKR_OAUTH_KEY / FLICKR_OAUTH_SECRET, run this to ensure upload process works
+
+	node scripts/flickr_test_upload.js
+
+
+Seed Tide data
+-----
+
+	cd other
+	ruby seed_tides.rb
+
 
