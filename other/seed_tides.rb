@@ -14,7 +14,10 @@ def convert_date_range date_range_baloney
   { event_start: Date.strptime(event_start, "%d %B"),
     event_end: Date.strptime(event_end, "%d %B") }
 end
-
+API_URL = 'http://kingtides-api-env-fubbpjhd29.elasticbeanstalk.com'
+#API_URL = 'http://localhost:3000' # change depending on server settings
+config = JSON.parse(File.read("../config.json"))
+CORS_WHITELISTED_URL = config["WKT_CORS_WHITELIST"].split(",")[0]
 tide_data = JSON.parse(File.read("./tide_data.json"))
 tide_data.each do |state, values|
   values["areaInfo"].each do |area|
@@ -31,8 +34,8 @@ tide_data.each do |state, values|
       longitude:lat_long[1]
     }
     # puts upload_area.to_json
-    uri = URI('http://kingtides-api-env-fubbpjhd29.elasticbeanstalk.com/tides')
-    req = Net::HTTP::Post.new(uri, initheader = {'Content-Type' =>'application/json'})
+    uri = URI(API_URL+'/tides')
+    req = Net::HTTP::Post.new(uri, initheader = {'Content-Type' =>'application/json', 'Origin' => CORS_WHITELISTED_URL})
     req.body = upload_area.to_json
     response = Net::HTTP.new(uri.hostname, uri.port).start {|http| http.request(req) }
     puts response.body
