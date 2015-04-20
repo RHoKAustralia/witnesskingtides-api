@@ -16,6 +16,9 @@ var kingTideEventSchema = new Schema({
   highTideOccurs: {
     type: Date
   },
+  lowTideOccurs: {
+    type: Date
+  },
   eventStart: {
     type: Date
   },
@@ -27,6 +30,15 @@ var kingTideEventSchema = new Schema({
   },
   longitude: {
     type: Number
+  },
+  bom_id: {
+    type: String
+  },
+  timezone: {
+    type: String
+  },
+  lastUpdated: {
+    type: Date
   }
 });
 
