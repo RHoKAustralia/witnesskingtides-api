@@ -16,8 +16,8 @@ function convertBOMDataToOurData(json){
 		return {
 				location: item.properties.PORT_NAME,
 				state: item.properties.STATE_CODE,
-				latitude: item.properties.lat,
-				longitude: item.properties.lon,
+				latitude: item.properties.LAT,
+				longitude: item.properties.LON,
 				highTideOccurs: null,
 				eventStart: null,
 				eventEnd: null,
