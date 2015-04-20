@@ -34,7 +34,13 @@ var kingTideEventSchema = new Schema({
   bom_id: {
     type: String
   },
+  parent_bom_id: {
+    type: String
+  },
   timezone: {
+    type: String
+  },
+  offset: {
     type: String
   },
   lastUpdated: {
