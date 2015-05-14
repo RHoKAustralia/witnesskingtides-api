@@ -1,0 +1,9 @@
+{
+  "MONGO_URL": "mongodb://localhost:27017/db",
+  "FLICKR_KEY": "enter_your_key_here (get from https://www.flickr.com/services/apps/)",
+  "FLICKR_SECRET": "enter_your_secret_here",
+  "FLICKR_USER_ID":"witnesskingtides",
+  "FLICKR_OAUTH_KEY":"",
+  "FLICKR_OAUTH_SECRET":"",
+  "WKT_CORS_WHITELIST": "http://localhost,https://localhost:5000"
+}
