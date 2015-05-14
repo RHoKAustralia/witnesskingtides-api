@@ -9,42 +9,74 @@ API for Wave Witness King Tides
 [![NPM](https://nodei.co/npm/kingtides-api.png)](https://nodei.co/npm/kingtides-api/)
 
 Setup
-----
-Create a file named `config.json` and add the following content:
+-----
 
-    {
-	  "MONGO_URL": "mongodb://user:pwd@localhost:27017/db",
-	  "FLICKR_KEY": "flickr_api_key",
-	  "FLICKR_SECRET": "flickr_shared_secret",
-	  "FLICKR_USER_ID":"",
-	  "FLICKR_OAUTH_KEY":"",
-	  "FLICKR_OAUTH_SECRET":"",
-	  "WKT_CORS_WHITELIST": "http://localhost"
-    }
+1. Create a file named `config.json` and add the following content (FLICKR_OAUTH_KEY and FLICKR_OAUTH_SECRET intentionally left blank for initial creation):
 
-Install dependencies
+        {
+            "MONGO_URL": "mongodb://user:pwd@localhost:27017/db",
+            "FLICKR_KEY": "flickr_api_key",
+            "FLICKR_SECRET": "flickr_shared_secret",
+            "FLICKR_USER_ID":"witnesskingtides",
+            "FLICKR_OAUTH_KEY":"",
+            "FLICKR_OAUTH_SECRET":"",
+            "WKT_CORS_WHITELIST": "http://localhost,https://localhost:5000"
+        }
 
-    npm install
+2. Install dependencies
 
-Authorize Flickr
-----
-To get values FLICKR_USER_ID / FLICKR_OAUTH_KEY / FLICKR_OAUTH_SECRET
+        npm install
 
-	node scripts/flickr_auth.js
+3. Fill in FLICKR_USER_ID with your Flickr web address (this is used for the photo search)
 
-Follow instructions and update config.json based on output
+        https://www.flickr.com/photos/FLICKR_USER_ID
+
+   Create / Find your Flickr web address via
+    
+        https://www.flickr.com/account
+
+   Alternatively you can use the unique ID in Step 5 below when authorizing Flickr
+
+4. Fill in FLICKR_KEY and FLICKR_SECRET
+
+   Find/Create existing keys at
+   
+       https://www.flickr.com/services/apps/
+
+
+5. Authorize Flickr to get FLICKR_OAUTH_KEY and FLICKR_OAUTH_SECRET (this is used for the photo upload)
+
+       node scripts/flickr_auth.js
+
+    Follow instructions and update config.json based on output.
+    
+    Note: this will create a private photo in your Flickr Camera Roll. Delete it if necessary.
+
+6. Configure WKT_CORS_WHITELIST with the URL where you front end is coming from. Comma separate URLs. Specify ports if necesasry. 
+   
+   Sample code for front end:
+
+       https://github.com/rhok-melbourne/witnesskingtides-web/
+
+7. Run server
+
+       npm start
+
+    or
+
+       nodejs bin/www
+
 
 Test Flickr Upload
------
-After updating FLICKR_USER_ID / FLICKR_OAUTH_KEY / FLICKR_OAUTH_SECRET, run this to ensure upload process works
+------------------
+After updating Flickr config run this to ensure upload process works
 
-	node scripts/flickr_test_upload.js
+    node scripts/flickr_test_upload.js
 
 
 Seed Tide data
------
+--------------
+If there is no data at all, use this to get started
 
-	cd other
-	ruby seed_tides.rb
-
-
+    cd other
+    ruby seed_tides.rb
