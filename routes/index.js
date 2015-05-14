@@ -53,13 +53,16 @@ router.get('/photos/search', cors, function (req, res) {
     per_page: req.query.per_page,
     page: req.query.page
   };
-
-  if (req.params['min_taken_date']) {
-    params.min_taken_date = req.params['min_taken_date'];
+  if (req.query['min_taken_date']) {
+    params.min_taken_date = req.query['min_taken_date'];
   }
 
-  if (req.params['max_taken_date']) {
-    params.max_taken_date = req.params['max_taken_date'];
+  if (req.query['max_taken_date']) {
+    params.max_taken_date = req.query['max_taken_date'];
+  }
+
+  if (req.query['bbox']) {
+    params.bbox = req.query['bbox'];
   }
 
   controllers.flickr.flickrSearch(res, params);
