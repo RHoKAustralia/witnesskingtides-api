@@ -2,7 +2,7 @@
 
 var KingTideEvent = require('../models/kingtideevent');
 var http = require('http');
-var SERVICE_URL = 'http://www.bom.gov.au/australia/tides/scripts/getNextTides.php?aac={bom_id}&offset=false&tz={timezone}';
+var SERVICE_URL = 'http://www.bom.gov.au/australia/tides/scripts/getNextTides.php?aac={bom_id}&offset={offset}&tz={timezone}';
 
 var findCb = function(res) {
   return function (err, events) {
@@ -58,8 +58,9 @@ exports.getTide = function(res, tideId) {
       }
       if(getUpdate){
         var url = SERVICE_URL
-          .replace("{bom_id}", event.bom_id)
+          .replace("{bom_id}", event.parent_bom_id || event.bom_id)
           .replace("{timezone}", event.timezone)
+          .replace("{offset}", event.offset || "false");
 
         console.log("Getting latest info from BOM " + url);
         downloadData(url,

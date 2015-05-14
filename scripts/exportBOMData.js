@@ -16,18 +16,25 @@ function convertBOMDataToOurData(json){
 		return {
 				location: item.properties.PORT_NAME,
 				state: item.properties.STATE_CODE,
-				latitude: item.properties.lat,
-				longitude: item.properties.lon,
+				latitude: item.properties.LAT,
+				longitude: item.properties.LON,
 				highTideOccurs: null,
 				eventStart: null,
 				eventEnd: null,
 				bom_id: item.properties.AAC,
 				timezone: item.properties.TIME_ZONE,
-				description: ""
+				offset: item.properties.TIME_OFFSE,
+				description: "",
+				parent_bom_id: item.properties.PARENT_AAC
 			}
 	});
+	
 	// format for mongoimport
 	for(var i = 0; i < data.length; i++){
+		if(!data[i].timezone){
+			var d = json.features.filter(function(item){ return item.properties.AAC == data[i].parent_bom_id})[0];
+			data[i].timezone = d.properties.TIME_ZONE;
+		}
 		console.log(JSON.stringify(data[i]));
 	}
 }
