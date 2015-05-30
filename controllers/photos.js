@@ -46,7 +46,9 @@ exports.getPhoto = function(res, id) {
 
 exports.photoSearch = function (res, params) {
   console.log('params', params);
-  var search = {};
+  var search = {
+    flickrUrl: {$exists: true}
+  };
   if (params.min_taken_date) {
     search.submitted = search.submitted || {};
     search.submitted['$gte'] = new Date(params.min_taken_date*1000);
