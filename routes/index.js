@@ -44,6 +44,50 @@ router.post('/photos', cors, function (req, res) {
   var contentType = req.get('Content-Type');
   controllers.photos.uploadPhoto(req, res, contentType);
 });
+router.get('/photos/deleted', cors, function (req, res) {
+  var params = {};
+  params = req.query;
+  var cb = null;
+  if(params.format && params.format == 'html'){
+    cb = function(err, data){
+      res.writeHead(200, { 'Content-Type': 'text/html' });   
+      if(err)
+        res.write("<h3>Error: "  + err.message + "</h3>");
+      else
+      {
+        for(var i = 0; i < data.length; i++){
+          var photo = data[i];
+          if(photo.description)
+            res.write("<b>" + photo.description + "</b>");
+          res.write(" (" + (photo.submitted) + ")");
+          res.write("<ul>");
+          res.write("<li><a href='" + photo.flickrUrl + "' target='_blank'>check flickr</a></li>");
+          res.write("<li><a href='/photos/undelete/" + photo.flickrId + "' target='_blank'>Undelete</a></li>");
+          res.write("</ul>");
+          res.write("<hr>");
+        }
+        res.end();
+      }
+
+    }
+  }
+  controllers.photos.getAllDeletedPhotos(res, params, cb);
+});
+router.get('/photos/undelete/:id', cors, function (req, res) {
+  var id = req.params.id;
+  controllers.photos.getPhotoByFlickrId(res, id, function(err,data){
+    if(err){
+      res.status(500).json('Photo doesn\'t exit in database');
+      return;
+    }
+    console.log(data);
+    if(!data.deleted){
+      res.status(500).json('Photo already undeleted');
+      return;
+    }
+    controllers.flickr.getPhoto(res, id, true);  
+  });  
+});
 
 router.get('/photos/search', cors, function (req, res) {
   console.log('local search');
@@ -84,6 +128,10 @@ router.get('/flickr/search', cors, function (req, res) {
   }
 
   controllers.flickr.flickrSearch(res, params);
+});
+router.get('/flickr/:id', cors, function (req, res) {
+  var id = req.params.id;
+  controllers.flickr.getPhoto(res, id);
 });
 
 router.get('/photos/:id', cors, function (req, res) {

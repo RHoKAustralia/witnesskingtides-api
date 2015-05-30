@@ -10,6 +10,9 @@ var photoSchema = new Schema({
   submitted: {
     type: Date
   },
+  dateTaken: {
+    type: Date
+  },
   flickrId: {
     type: String
   },
@@ -24,6 +27,9 @@ var photoSchema = new Schema({
   },
   uploadStatus: {
     type: String
+  },
+  deleted: {
+    type: Boolean
   },
   user: {
     type: Schema.Types.ObjectId,

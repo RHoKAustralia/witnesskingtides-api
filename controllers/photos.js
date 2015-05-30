@@ -25,6 +25,27 @@ exports.getAllPhotos = function(res, email) {
     }));
   });
 };
+exports.getAllDeletedPhotos = function(res, params, cb) {
+  params = params || {};
+  var page = params.page || 1;
+  var items_per_page = params.items_per_page || 100;
+
+  if(!page || page < 1) page = 1;
+  Photo
+    .find({deleted: 1})
+    .limit(items_per_page)
+    .skip((page-1) * items_per_page)
+    .sort({submitted: -1})
+    .exec(function(err,data){
+    if (err) {
+      if(cb) cb(err);
+      res.json(500, err);
+      return;
+    }
+    if(cb) cb(null, data);
+    else res.json(data);
+  });
+}
 
 exports.uploadPhoto = function(req, res, contentType) {
   var uploader = new Uploader();
@@ -32,15 +53,36 @@ exports.uploadPhoto = function(req, res, contentType) {
   uploader['handle' + uploadTypeSuffix](req, res);
 };
 
-exports.getPhotoByPosition = function(res, id) {
-  Photo.findById(id, function(err, data) {
-    res.json(data);
+exports.toggleDelete = function(res, search, undelete) {
+  console.log((undelete ? 'un' : '') + 'delete via ', search);    
+  Photo.update(search, {$set: {deleted: !undelete}}, {multi: true}, function(err, data) {
+    if (err) {
+      res.json(500, err);
+      return;
+    }
+    var affected = parseInt(data);
+    res.json((affected > 0 ? affected : "No ") + " records modified");
   });
 };
 
 exports.getPhoto = function(res, id) {
   Photo.findById(id, function(err, data) {
+    if (err) {
+      res.json(500, err);
+      return;
+    }
     res.json(data);
+  });
+};
+exports.getPhotoByFlickrId = function(res, id, cb) {
+  Photo.findOne({flickrId: id}, function(err, data) {
+    if (err) {
+      if(cb) cb(err)
+      else res.json(500, err);
+      return;
+    }
+    if(cb) cb(null,data);
+    else res.json(data);
   });
 };
 
@@ -65,7 +107,7 @@ exports.photoSearch = function (res, params) {
       search.longitude = {'$gte' : parts[0], '$lte': parts[2]}
     }
   }
-console.log('search', search);
+  console.log('search', search);
   Photo.find(search, function (err, docs) {
     if(docs){
       console.log('doc length', docs.length);
