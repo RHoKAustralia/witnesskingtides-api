@@ -46,6 +46,23 @@ router.post('/photos', cors, function (req, res) {
 });
 
 router.get('/photos/search', cors, function (req, res) {
+  console.log('local search');
+  var params = {};
+  if (req.query['min_taken_date']) {
+    params.min_taken_date = req.query['min_taken_date'];
+  }
+
+  if (req.query['max_taken_date']) {
+    params.max_taken_date = req.query['max_taken_date'];
+  }
+
+  if (req.query['bbox']) {
+    params.bbox = req.query['bbox'];
+  }
+  controllers.photos.photoSearch(res, params);
+});
+router.get('/flickr/search', cors, function (req, res) {
+  console.log('flickr search');
   var params = {
     api_key: conf.get('FLICKR_KEY'),
     user_id: conf.get('FLICKR_USER_ID'),

@@ -37,3 +37,45 @@ exports.getPhoto = function(res, id) {
     res.json(data);
   });
 };
+
+exports.photoSearch = function (res, params) {
+  console.log(params);
+  var search = {};
+  if (params.min_taken_date) {
+    search.submitted = search.submitted || {};
+    search.submitted = {'$gte': new Date(params.min_taken_date)};
+  }
+  if (params.max_taken_date) {
+    search.submitted = search.submitted || {};
+    search.submitted = {'$lte': new Date(params.max_taken_date)};
+  }
+
+  if (params.bbox) {
+    var parts = params.bbox.split(',');
+    if(parts.length > 3){
+      search.latitude = {'$lte' : parts[1], '$gte': parts[3]}
+      search.longitude = {'$gte' : parts[0], '$lte': parts[2]}
+    }
+  }
+
+  Photo.find(search, function (err, docs) {
+    if(docs){
+    console.log('doc length', docs.length);
+        var cache = {};
+        console.log("Restart grids");
+
+        for(var i = 0; i< docs.length;i++){
+          if(cache[docs[i].latitude + "_" + docs[i].longitude]) {
+            cache[docs[i].latitude + "_" + docs[i].longitude].cnt++;
+            continue;
+          }
+          cache[docs[i].latitude + "_" + docs[i].longitude] = {
+            pos: [docs[i].latitude, docs[i].longitude],
+            cnt: 1
+          };
+        }
+
+        res.json(cache);
+    }
+  });
+};
