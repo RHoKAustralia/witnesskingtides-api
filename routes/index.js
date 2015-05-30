@@ -70,12 +70,13 @@ router.get('/flickr/search', cors, function (req, res) {
     per_page: req.query.per_page,
     page: req.query.page
   };
+  // change to upload date to make consistent with api search
   if (req.query['min_taken_date']) {
-    params.min_taken_date = req.query['min_taken_date'];
+    params.min_upload_date = req.query['min_taken_date']; 
   }
 
   if (req.query['max_taken_date']) {
-    params.max_taken_date = req.query['max_taken_date'];
+    params.max_upload_date = req.query['max_taken_date'];
   }
 
   if (req.query['bbox']) {
