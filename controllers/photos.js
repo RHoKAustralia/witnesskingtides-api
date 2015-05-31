@@ -129,6 +129,7 @@ exports.photoSearch = function (res, params) {
   console.log('params', params);
   var search = {
     flickrUrl: {$exists: true}
+    ,$or: [ {deleted: {$eq: null}}, {deleted: false}]
   };
   if (params.min_taken_date) {
     search.submitted = search.submitted || {};
