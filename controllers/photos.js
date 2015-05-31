@@ -125,7 +125,7 @@ exports.getPhotoByFlickrId = function(res, id, cb) {
   });
 };
 
-exports.photoSearch = function (res, params) {
+var getSearchParams = function(params){
   console.log('params', params);
   var search = {
     flickrUrl: {$exists: true}
@@ -143,29 +143,45 @@ exports.photoSearch = function (res, params) {
   if (params.bbox) {
     var parts = params.bbox.split(',');
     if(parts.length > 3){
-      search.latitude = {'$lte' : parts[1], '$gte': parts[3]}
-      search.longitude = {'$gte' : parts[0], '$lte': parts[2]}
+      search.latitude = {'$gte' : parseFloat(parts[1]), '$lte': parseFloat(parts[3])}
+      search.longitude = {'$gte' : parseFloat(parts[0]), '$lte': parseFloat(parts[2])}
     }
   }
   console.log('search', search);
-  Photo.find(search, function (err, docs) {
-    if(docs){
-      console.log('doc length', docs.length);
-      var cache = {};
-      console.log("Restart grids");
+  return search;
 
-      for(var i = 0; i< docs.length;i++){
-        if(cache[docs[i].latitude + "_" + docs[i].longitude]) {
-          cache[docs[i].latitude + "_" + docs[i].longitude].cnt++;
-          continue;
-        }
-        cache[docs[i].latitude + "_" + docs[i].longitude] = {
-          pos: [docs[i].latitude, docs[i].longitude],
-          cnt: 1
-        };
-      }
+}
 
-      res.json(cache);
+exports.search = function (res, params) {
+
+  Photo.find(getSearchParams(params), function (err, docs) {
+    if(err) {
+      res.status(500).json(err);
+      return;
     }
+    res.json(docs);
+  });
+};
+exports.clusters = function (res, params) {
+  Photo.find(getSearchParams(params), function (err, docs) {
+    if(err) {
+      res.status(500).json(err);
+      return;
+    }
+    console.log('doc length', docs.length);
+    var cache = {};
+    console.log("Restart grids");
+
+    for(var i = 0; i< docs.length;i++){
+      if(cache[docs[i].latitude + "_" + docs[i].longitude]) {
+        cache[docs[i].latitude + "_" + docs[i].longitude].cnt++;
+        continue;
+      }
+      cache[docs[i].latitude + "_" + docs[i].longitude] = {
+        pos: [docs[i].latitude, docs[i].longitude],
+        cnt: 1
+      };
+    }
+    res.json(cache);
   });
 };

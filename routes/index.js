@@ -73,6 +73,52 @@ router.get('/photos/deleted', cors, function (req, res) {
   }
   controllers.photos.getAllDeletedPhotos(res, params, cb);
 });
+
+/*
+ * base58.js
+ *  - encodes integers to and decodes from a base58 (or your own) base58 alphabet
+ *  - based on Flickr's url shortening
+ * 
+ * usage:
+ *   base58.encode(integer);
+ *   base58.decode(string);
+ * 
+ * (c) 2012 inflammable/raromachine
+ * Licensed under the MIT License.
+ * 
+ */
+ // https://gist.github.com/inflammable/2929362
+var base58 = (function(alpha) {
+    var alphabet = alpha || '123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ',
+        base = alphabet.length;
+    return {
+        encode: function(enc) {
+            if(typeof enc!=='number' || enc !== parseInt(enc))
+                throw '"encode" only accepts integers.';
+            var encoded = '';
+            while(enc) {
+                var remainder = enc % base;
+                enc = Math.floor(enc / base);
+                encoded = alphabet[remainder].toString() + encoded;        
+            }
+            return encoded;
+        },
+        decode: function(dec) {
+            if(typeof dec!=='string')
+                throw '"decode" only accepts strings.';            
+            var decoded = 0;
+            while(dec) {
+                var alphabetPosition = alphabet.indexOf(dec[0]);
+                if (alphabetPosition < 0)
+                    throw '"decode" can\'t find "' + dec[0] + '" in the alphabet: "' + alphabet + '"';
+                var powerOf = dec.length - 1;
+                decoded += alphabetPosition * (Math.pow(base, powerOf));
+                dec = dec.substring(1);
+            }
+            return decoded;
+        }
+    };
+})();
 router.get('/admin', function (req, res) {
   var params = {};
   params = req.query;
@@ -106,11 +152,16 @@ router.get('/admin', function (req, res) {
         " .nav { line-height: 2em; }" +
         " .nav a { padding: 5px; background-color: #ccc;}" + 
         " .nav a.curr { background-color: #eee;}" + 
+        " .row img { float: left; padding-top: 10px; } " + 
+        " .row > div { margin-left: 90px; } " + 
+        " .row { padding-top: 5px; border-bottom: 1px solid black; } " + 
         "</style>");
         printNav(count,perPage, currPage,res);
         for(var i = 0; i < data.length; i++){
           var photo = data[i];
-          res.write("<div style='" + (photo.deleted ? "background-color: #fcc" : "") + "'>");
+          res.write("<div class='row' style='" + (photo.deleted ? "background-color: #fcc" : "") + "'>");
+          res.write("<img src='" + (photo.flickrUrl ? photo.flickrUrl.replace(".jpg", "_s.jpg") : '') + "'>");
+          res.write("<div>");
           if(photo.description)
             res.write("<b>" + photo.description + "</b>");
           res.write(" (" + (photo.submitted) + ")");
@@ -121,13 +172,20 @@ router.get('/admin', function (req, res) {
             res.write("<div>Location: <a target='_blank' href='http://maps.google.com/maps?q="+latlng+"'>"+ latlng +"</a></div>");
           }
           res.write("<ul>");
-          res.write("<li><a href='" + photo.flickrUrl + "' target='_blank'>View on Flickr</a></li>");
+          var url_id = '';
+          try{
+            url_id = base58.encode(photo.flickrId)
+          }
+          catch(err){
+
+          }
+          res.write("<li><a href='https://flic.kr/p/" + url_id + "' target='_blank'>View on Flickr</a></li>");
           if(photo.deleted)
             res.write("<li><a href='/photos/undelete/" + photo.flickrId + "' target='_blank'>Undelete</a></li>");
           else
             res.write("<li><a href='/photos/delete/" + photo.flickrId + "' target='_blank'>Delete</a></li>");
           res.write("</ul>");
-          res.write("<hr>");
+          res.write("</div>");
           res.write("</div>");
         }
         printNav(count,perPage, currPage,res);        
@@ -162,8 +220,7 @@ router.get('/photos/undelete/:id', function (req, res) {
   });  
 });
 
-router.get('/photos/search', cors, function (req, res) {
-  console.log('local search');
+var getPhotoSearchParams = function(req){
   var params = {};
   if (req.query['min_taken_date']) {
     params.min_taken_date = req.query['min_taken_date'];
@@ -176,7 +233,15 @@ router.get('/photos/search', cors, function (req, res) {
   if (req.query['bbox']) {
     params.bbox = req.query['bbox'];
   }
-  controllers.photos.photoSearch(res, params);
+  return params;
+};
+
+router.get('/photos/search', cors, function (req, res) {
+  controllers.photos.search(res, getPhotoSearchParams(req));
+});
+
+router.get('/photos/clusters', cors, function (req, res) {
+  controllers.photos.clusters(res, getPhotoSearchParams(req));
 });
 router.get('/flickr/search', cors, function (req, res) {
   console.log('flickr search');
