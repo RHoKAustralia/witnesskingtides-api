@@ -103,6 +103,7 @@ router.get('/admin', function (req, res) {
       {
         res.write("<H2>Admin</H2>");
         res.write("<style>" +
+        " .nav { line-height: 2em; }" +
         " .nav a { padding: 5px; background-color: #ccc;}" + 
         " .nav a.curr { background-color: #eee;}" + 
         "</style>");
@@ -115,6 +116,10 @@ router.get('/admin', function (req, res) {
           res.write(" (" + (photo.submitted) + ")");
           if(photo.dateTaken)
             res.write("<div>Taken at : " + photo.dateTaken + "</div>");
+          if(photo.latitude && photo.longitude){
+            var latlng = photo.latitude + "," + photo.longitude;
+            res.write("<div>Location: <a target='_blank' href='http://maps.google.com/maps?q="+latlng+"'>"+ latlng +"</a></div>");
+          }
           res.write("<ul>");
           res.write("<li><a href='" + photo.flickrUrl + "' target='_blank'>View on Flickr</a></li>");
           if(photo.deleted)
