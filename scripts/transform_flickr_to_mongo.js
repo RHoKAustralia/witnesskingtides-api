@@ -26,20 +26,43 @@ for(var i = 0; i < photos.length; i++){
 	// posted date is always passed around as a unix timestamp, which is an unsigned integer specifying the number of seconds since Jan 1st 1970 GMT.
 	// All posted dates are passed around in GMT 
 	var date = {"$date" : new Date(parseInt(photo.dateuploaded)*1000).toISOString()};
+	var dateTaken = null;
+	if(photo.dates && photo.dates.taken && !isNaN(Date.parse(photo.dates.taken)))
+		dateTaken = {"$date" : new Date(Date.parse(photo.dates.taken)).toISOString()}
+	if(!dateTaken) dateTaken = date;
+	//console.log(photo.dateuploaded, photo.dates);
+	//console.log(dateTaken);
 
 	var url = (photo.urls && photo.urls.url && photo.urls.url[0] ? photo.urls.url[0]._content : "");
+
+	// https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}.jpg
+
+	url = "https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}.jpg"
+	.replace("{farm-id}", photo.farm)
+	.replace("{server-id}", photo.server)
+	.replace("{id}", photo.id)
+	.replace("{secret}", photo.secret);
+
 	var data = { 
 	"uploadStatus" : "COMPLETED"
 	, "user" : {"$oid" : "000000000000000000000001"}
 	, "longitude" : photo.location.longitude
 	, "latitude" : photo.location.latitude
 	, "submitted" : date
+	, "dateTaken" : dateTaken
 	, "description" : desc
 	, "__v" : 0
 	, "flickrId" : photo.id
 	, "flickrUrl" : url
 	};
-	console.log(JSON.stringify(data));
+	console.log(JSON.stringify(data)); // used for batch import of all data
+
+	// use the following for updating any fields if necessary
+	var out = "db.photos.update({flickrId:'{flickrId}'}, {$set : {flickrUrl: '{flickerUrl}', dateTaken: {dateTaken}}});";
+	out = out.replace('{flickrId}', photo.id);
+	out = out.replace('{flickerUrl}', url);
+	out = out.replace('{dateTaken}', "new Date('" + dateTaken["$date"] + "')");
+	// console.log(out); // used for updating data if necessary
 }
 /*
 
