@@ -46,7 +46,46 @@ exports.getAllDeletedPhotos = function(res, params, cb) {
     else res.json(data);
   });
 }
+exports.getPhotosCount = function(res, params, cb) {
+  params = params || {};
+  var page = params.page || 1;
+  var search = params.search || {};
+  var items_per_page = params.count || 100;
 
+  if(!page || page < 1) page = 1;
+  Photo
+    .count(search, function(err,data){
+    if (err) {
+      if(cb) cb(err);
+      res.json(500, err);
+      return;
+    }
+    if(cb) cb(null, data);
+    else res.json(data);
+  });
+}
+exports.getPhotos = function(res, params, cb) {
+  params = params || {};
+  var page = params.page || 1;
+  var search = params.search || {};
+  var items_per_page = params.count || 100;
+
+  if(!page || page < 1) page = 1;
+  Photo
+    .find(search)
+    .limit(items_per_page)
+    .skip((page-1) * items_per_page)
+    .sort({submitted: -1})
+    .exec(function(err,data){
+    if (err) {
+      if(cb) cb(err);
+      res.json(500, err);
+      return;
+    }
+    if(cb) cb(null, data);
+    else res.json(data);
+  });
+}
 exports.uploadPhoto = function(req, res, contentType) {
   var uploader = new Uploader();
   var uploadTypeSuffix = contentType.indexOf('json') >= 0 ? 'Json' : 'Multipart';
@@ -60,8 +99,8 @@ exports.toggleDelete = function(res, search, undelete) {
       res.json(500, err);
       return;
     }
-    var affected = parseInt(data);
-    res.json((affected > 0 ? affected : "No ") + " records modified");
+    res.json(undelete ? "Undeleted" : "Marked as Deleted");
+
   });
 };
 
