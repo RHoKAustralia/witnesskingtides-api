@@ -20,10 +20,10 @@ var photoSchema = new Schema({
     type: String
   },
   latitude: {
-    type: String
+    type: Number
   },
   longitude: {
-    type: String
+    type: Number
   },
   uploadStatus: {
     type: String
