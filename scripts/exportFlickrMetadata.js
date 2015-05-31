@@ -1,4 +1,16 @@
 // Export Existing Flickr MetaData
+//
+// Usage:
+// node scripts/exportFlikcrMetadata.js >> scripts/flickr_import.json
+//
+// Run transform_flickr_to_mongo script in order to conver this data to the necessary format before importing to mongo
+//
+// Required config settings
+//	FLICKR_USER_ID    Flickr User to read from
+// 	FLICKR_KEY        Flickr API Key
+// 	FLICKR_SECRET     Flickr API secret
+
+
 "use strict"
 
 var config = require('../lib/config');
