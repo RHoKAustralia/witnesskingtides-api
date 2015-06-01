@@ -43,7 +43,7 @@ exports.undeleteIfExistOnFlickr = function (res, id, cb) {
         }
         return;
       }
-      Photo.toggleDelete(res, {flickrId: id}, true, cb);
+      Photo.toggleDelete(res, {flickrId: id}, false, cb);
     });
   });
 };
@@ -60,7 +60,7 @@ exports.deleteIfDoesntExistOnFlickr = function (res, id, cb) {
         if(err.message && err.message.match(/not found/) && err.message.match(/invalid ID/)) 
         {
           console.log('photo doesn\'t exist. marking as deleted', err);
-          Photo.toggleDelete(res, {flickrId: id}, false, cb);
+          Photo.toggleDelete(res, {flickrId: id}, true, cb);
         }
         else{
           res.status(500).json('Error retrieving photo');

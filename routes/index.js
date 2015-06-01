@@ -4,6 +4,7 @@ var express = require('express');
 var router = express.Router();
 var conf = require('../lib/config');
 var cors = require('../lib/cors');
+var base58 = require('../lib/base58');
 
 var requireController = function (name) {
   return require('../controllers/' + name);
@@ -44,95 +45,28 @@ router.post('/photos', cors, function (req, res) {
   var contentType = req.get('Content-Type');
   controllers.photos.uploadPhoto(req, res, contentType);
 });
-router.get('/photos/deleted', cors, function (req, res) {
-  var params = {};
-  params = req.query;
-  var cb = null;
-  if(params.format && params.format == 'html'){
-    cb = function(err, data){
-      res.writeHead(200, { 'Content-Type': 'text/html' });   
-      if(err)
-        res.write("<h3>Error: "  + err.message + "</h3>");
-      else
-      {
-        for(var i = 0; i < data.length; i++){
-          var photo = data[i];
-          if(photo.description)
-            res.write("<b>" + photo.description + "</b>");
-          res.write(" (" + (photo.submitted) + ")");
-          res.write("<ul>");
-          res.write("<li><a href='" + photo.flickrUrl + "' target='_blank'>View on Flickr</a></li>");
-          res.write("<li><a href='/photos/undelete/" + photo.flickrId + "' target='_blank'>Undelete</a></li>");
-          res.write("</ul>");
-          res.write("<hr>");
-        }
-        res.end();
-      }
 
-    }
-  }
-  controllers.photos.getAllDeletedPhotos(res, params, cb);
-});
-
-/*
- * base58.js
- *  - encodes integers to and decodes from a base58 (or your own) base58 alphabet
- *  - based on Flickr's url shortening
- * 
- * usage:
- *   base58.encode(integer);
- *   base58.decode(string);
- * 
- * (c) 2012 inflammable/raromachine
- * Licensed under the MIT License.
- * 
- */
- // https://gist.github.com/inflammable/2929362
-var base58 = (function(alpha) {
-    var alphabet = alpha || '123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ',
-        base = alphabet.length;
-    return {
-        encode: function(enc) {
-            if(typeof enc!=='number' || enc !== parseInt(enc))
-                throw '"encode" only accepts integers.';
-            var encoded = '';
-            while(enc) {
-                var remainder = enc % base;
-                enc = Math.floor(enc / base);
-                encoded = alphabet[remainder].toString() + encoded;        
-            }
-            return encoded;
-        },
-        decode: function(dec) {
-            if(typeof dec!=='string')
-                throw '"decode" only accepts strings.';            
-            var decoded = 0;
-            while(dec) {
-                var alphabetPosition = alphabet.indexOf(dec[0]);
-                if (alphabetPosition < 0)
-                    throw '"decode" can\'t find "' + dec[0] + '" in the alphabet: "' + alphabet + '"';
-                var powerOf = dec.length - 1;
-                decoded += alphabetPosition * (Math.pow(base, powerOf));
-                dec = dec.substring(1);
-            }
-            return decoded;
-        }
-    };
-})();
 router.get('/admin', function (req, res) {
   var params = {};
   params = req.query;
 
   var currPage = params.page || 1;
   var perPage = params.count || 100;
-  var printNav = function(count,perPage, page, res){
+  params.search = {'$or': [{deleted: {$eq: null}}, {deleted: false}]};
+  var queryString = '';
+  if(params.deleted){
+    queryString = "&deleted=1";
+    params.search = {deleted: true};
+  }
+
+  var printNav = function(count,perPage,page,queryString,res){
     res.write("<p class='nav'>Page: ");
     for(var i = 1; i <= Math.ceil(count*1.0/perPage); i++)
     {      
       if(i == currPage)
-        res.write("<a class='curr' href='/admin?page=" + i + "&count="+ perPage +"'>["+i+"]</a> ");
+        res.write("<a class='curr' href='/admin?page=" + i + "&count="+ perPage +"&" + queryString +"'>["+i+"]</a> ");
       else
-        res.write("<a href='/admin?page=" + i + "&count="+ perPage +"'>"+i+"</a> ");
+        res.write("<a href='/admin?page=" + i + "&count="+ perPage +"&" + queryString +"'>"+i+"</a> ");
     }
     res.write("</p>");
   }
@@ -155,9 +89,17 @@ router.get('/admin', function (req, res) {
         " .row img { float: left; padding-top: 10px; } " + 
         " .row > div { margin-left: 90px; } " + 
         " .row { padding-top: 5px; border-bottom: 1px solid black; } " + 
+        " .deleted { background-color: #fcc; } " +
+        " .warning { background-color: #fcc; } " +
+        " .uploading { background-color: #cfc; } " +
         "</style>");
-        printNav(count,perPage, currPage,res);
+        if(params.deleted)
+          res.write("<a href='/admin?'>Show approved</a>");
+        else
+          res.write("<a href='/admin?deleted=1'>Show deleted</a>");
+        printNav(count,perPage,currPage,queryString,res);
         for(var i = 0; i < data.length; i++){
+
           var photo = data[i];
           res.write("<div class='row' style='" + (photo.deleted ? "background-color: #fcc" : "") + "'>");
           res.write("<img src='" + (photo.flickrUrl ? photo.flickrUrl.replace(".jpg", "_s.jpg") : '') + "'>");
@@ -173,22 +115,35 @@ router.get('/admin', function (req, res) {
           }
           res.write("<ul>");
           var url_id = '';
+          var id = photo.id;
+          var suffix = '';
+          if(photo.flickrId){
+            id = photo.flickrId;
+            suffix = 'Fid';
+          }
+
           try{
-            url_id = base58.encode(photo.flickrId)
+            url_id = base58.encode(parseInt(photo.flickrId));
           }
           catch(err){
-
           }
-          res.write("<li><a href='https://flic.kr/p/" + url_id + "' target='_blank'>View on Flickr</a></li>");
-          if(photo.deleted)
-            res.write("<li><a href='/photos/undelete/" + photo.flickrId + "' target='_blank'>Undelete</a></li>");
+          if(photo.flickrId)
+            res.write("<li><a href='https://flic.kr/p/" + url_id + "' target='_blank'>View on Flickr</a></li>");
           else
-            res.write("<li><a href='/photos/delete/" + photo.flickrId + "' target='_blank'>Delete</a></li>");
+            res.write("<li class='warning'>No flickr photo associated. Still uploading?</li>");
+          if(photo.deleted){
+            if(photo.flickrId)
+              res.write("<li><a href='/photos/undelete" + suffix + "/" + id + "' target='_blank'>Undelete</a></li>");
+            else
+              res.write("<li>No Flickr Image associated. Cannot undelete</li>");
+          }
+          else
+            res.write("<li><a href='/photos/delete"+ suffix + "/" + id + "' target='_blank'>Delete</a></li>");
           res.write("</ul>");
           res.write("</div>");
           res.write("</div>");
         }
-        printNav(count,perPage, currPage,res);        
+        printNav(count,perPage,currPage,queryString,res);        
         res.end();
       }
 
@@ -199,13 +154,28 @@ router.get('/admin', function (req, res) {
 // removed cors for 'admin' function
 router.get('/photos/delete/:id', function (req, res) {
   var id = req.params.id;
+  controllers.photos.getPhoto(res, id, function(err,data){
+    if(err){
+      res.status(500).json('Photo doesn\'t exist in database');
+      return;
+    }
+    if(data.flickrId){
+      res.status(500).json('Photo hasn\'t uploaded to flickr');
+      return;
+    }
+    controllers.photos.toggleDelete(res, {flickrId: data.flickrId});
+  });
+});
+
+// removed cors for 'admin' function
+router.get('/photos/deleteFid/:flickrId', function (req, res) {
+  var id = req.params.flickrId;
   controllers.flickr.deleteIfDoesntExistOnFlickr(res, id);
 });
 
-
 // removed cors for 'admin' function
-router.get('/photos/undelete/:id', function (req, res) {
-  var id = req.params.id;
+router.get('/photos/undeleteFid/:flickrId', function (req, res) {
+  var id = req.params.flickrId;
   controllers.photos.getPhotoByFlickrId(res, id, function(err,data){
     if(err){
       res.status(500).json('Photo doesn\'t exit in database');
@@ -216,32 +186,19 @@ router.get('/photos/undelete/:id', function (req, res) {
       res.status(500).json('Photo already undeleted');
       return;
     }
-    controllers.flickr.undeleteIfExistOnFlickr(res, id);  
+    controllers.flickr.undeleteIfExistOnFlickr(res, id);
   });  
 });
 
-var getPhotoSearchParams = function(req){
-  var params = {};
-  if (req.query['min_taken_date']) {
-    params.min_taken_date = req.query['min_taken_date'];
-  }
-
-  if (req.query['max_taken_date']) {
-    params.max_taken_date = req.query['max_taken_date'];
-  }
-
-  if (req.query['bbox']) {
-    params.bbox = req.query['bbox'];
-  }
-  return params;
-};
-
 router.get('/photos/search', cors, function (req, res) {
-  controllers.photos.search(res, getPhotoSearchParams(req));
+  controllers.photos.search(res, req);
+});
+router.get('/photos/paginatedSearch', cors, function (req, res) {
+  controllers.photos.paginatedSearch(res, req);
 });
 
 router.get('/photos/clusters', cors, function (req, res) {
-  controllers.photos.clusters(res, getPhotoSearchParams(req));
+  controllers.photos.clusters(res, req);
 });
 router.get('/flickr/search', cors, function (req, res) {
   console.log('flickr search');
