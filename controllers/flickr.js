@@ -22,6 +22,45 @@ exports.flickrSearch = function (res, params) {
     });
   });
 };
+exports.updatePhoto = function(res, id, cb){
+  Photo.getPhotoByFlickrId(res, id, function(err, photo){
+    if(err) {
+      if(!cb) cb = res.status(500).json;
+      cb('Error retrieving photo data from database');
+      return;
+    }
+    Flickr.authenticate(FlickrOptions, function (error, flickr) {
+      var params = {
+        photo_id: id
+      }
+      flickr.photos.getInfo(params, function (err, fPhoto) {
+        if (err) {
+          if(!cb) cb = res.status(500).json;
+          cb('Error retrieving photo data from flickr');
+          return;
+        }
+        if(fPhoto.photo.title && fPhoto.photo.title._content)
+          photo.description = fPhoto.photo.title._content;
+        if(fPhoto.photo.dates && fPhoto.photo.dates.taken && !isNaN(Date.parse(fPhoto.photo.dates.taken)))
+          photo.dateTaken = new Date(fPhoto.photo.dates.taken);
+        if(fPhoto.photo.location && fPhoto.photo.location.latitude && fPhoto.photo.location.longitude){
+          photo.latitude = fPhoto.photo.location.latitude;
+          photo.longitude = fPhoto.photo.location.longitude;
+        }
+        photo.save(function(err){
+          if (err) {
+            if(!cb) cb = res.status(500).json;
+            cb('Error retrieving photo data from flickr');
+            return;
+          }
+          var msg = 'Photo updated';
+          if(cb) cb(null, msg)
+          else res.json(msg);
+        });
+      });
+    });
+  });
+}
 exports.undeleteIfExistOnFlickr = function (res, id, cb) {
   var params = {
     photo_id: id

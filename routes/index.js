@@ -111,7 +111,7 @@ router.get('/admin', function (req, res) {
             res.write("<div>Taken at : " + photo.dateTaken + "</div>");
           if(photo.latitude && photo.longitude){
             var latlng = photo.latitude + "," + photo.longitude;
-            res.write("<div>Location: <a target='_blank' href='http://maps.google.com/maps?q="+latlng+"'>"+ latlng +"</a></div>");
+            res.write("<div>Location: <a target='_blank' href='http://maps.google.com/maps?q="+latlng+"'>"+ latlng.replace(",", ", ") +"</a></div>");
           }
           res.write("<ul>");
           var url_id = '';
@@ -127,8 +127,10 @@ router.get('/admin', function (req, res) {
           }
           catch(err){
           }
-          if(photo.flickrId)
+          if(photo.flickrId){
             res.write("<li><a href='https://flic.kr/p/" + url_id + "' target='_blank'>View on Flickr</a></li>");
+            res.write("<li><a href='/photos/update" + suffix +'/' + id + "' target='_blank'>Update</a></li>");
+          }
           else
             res.write("<li class='warning'>No flickr photo associated. Still uploading?</li>");
           if(photo.deleted){
@@ -171,6 +173,10 @@ router.get('/photos/delete/:id', function (req, res) {
 router.get('/photos/deleteFid/:flickrId', function (req, res) {
   var id = req.params.flickrId;
   controllers.flickr.deleteIfDoesntExistOnFlickr(res, id);
+});
+router.get('/photos/updateFid/:flickrId', function (req, res) {
+  var id = req.params.flickrId;
+  controllers.flickr.updatePhoto(res, id);
 });
 
 // removed cors for 'admin' function
