@@ -1,6 +1,7 @@
 var Flickr = require('flickrapi');
 var Photo = require('./photos');
 var conf = require('../lib/config');
+var base58 = require('../lib/base58');
 
 var FlickrOptions = {
   api_key: conf.get('FLICKR_KEY'),
@@ -23,10 +24,20 @@ exports.flickrSearch = function (res, params) {
   });
 };
 exports.updatePhoto = function(res, id, cb){
+  var msg = '';
+
   Photo.getPhotoByFlickrId(res, id, function(err, photo){
     if(err) {
-      if(!cb) cb = res.status(500).json;
-      cb('Error retrieving photo data from database');
+      msg = 'Error retrieving photo data from database';
+      if(!cb) res.status(500).json(msg);
+      else cb(msg);
+      return;
+    }
+    // console.log('db photo', photo);
+    if(photo == null){
+      msg = 'No photo in database associated with this flickr photo id. Nothing to update';
+      if(!cb) res.status(500).json(msg);
+      else cb(msg);
       return;
     }
     Flickr.authenticate(FlickrOptions, function (error, flickr) {
@@ -35,10 +46,12 @@ exports.updatePhoto = function(res, id, cb){
       }
       flickr.photos.getInfo(params, function (err, fPhoto) {
         if (err) {
-          if(!cb) cb = res.status(500).json;
-          cb('Error retrieving photo data from flickr');
+          msg = 'Error retrieving photo data from flickr. Photo may be deleted. Check http://flickr.com/p/' + base58.encode(parseInt(id));
+          if(!cb) res.status(500).json(msg);
+          else cb(msg);
           return;
         }
+        //console.log('flickr photo', fPhoto);
         if(fPhoto.photo.title && fPhoto.photo.title._content)
           photo.description = fPhoto.photo.title._content;
         if(fPhoto.photo.dates && fPhoto.photo.dates.taken && !isNaN(Date.parse(fPhoto.photo.dates.taken)))
@@ -49,8 +62,9 @@ exports.updatePhoto = function(res, id, cb){
         }
         photo.save(function(err){
           if (err) {
-            if(!cb) cb = res.status(500).json;
-            cb('Error retrieving photo data from flickr');
+            msg = 'Error saving photo data from flickr';
+            if(!cb) res.status(500).json(msg);
+            else cb(msg);
             return;
           }
           var msg = 'Photo updated';
@@ -120,7 +134,7 @@ exports.getPhoto = function (res, id, cb) {
   Flickr.authenticate(FlickrOptions, function (error, flickr) {
     flickr.photos.getInfo(params, function (err, result) {
       if (err) {
-        var msg = 'Error retrieving photo from Flickr';
+        var msg = 'Error retrieving photo from Flickr. Photo may be deleted';
         if(cb) cb(msg)
         else res.status(500).json(msg);
         return;
