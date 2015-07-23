@@ -120,8 +120,9 @@ exports.deleteIfDoesntExistOnFlickr = function (res, id, cb) {
         }
         return;
       }
-      if(cb) cb(null, result);
-      else res.json(result);
+      var errMsg = 'Photo still exists on Flickr. Not marked as deleted';
+      if(cb) cb(errMsg, result);
+      else res.status(500).json(errMsg);
     });
   });
 };
