@@ -189,8 +189,7 @@ router.get('/admin', function (req, res) {
   });
 });
 
-// removed cors for 'admin' function
-router.get('/photos/delete/:id', function (req, res) {
+router.get('/photos/delete/:id', cors, function (req, res) {
   var id = req.params.id;
   controllers.photos.getPhoto(res, id, function(err,data){
     if(err){
@@ -205,18 +204,16 @@ router.get('/photos/delete/:id', function (req, res) {
   });
 });
 
-// removed cors for 'admin' function
-router.get('/photos/deleteFid/:flickrId', function (req, res) {
+router.get('/photos/deleteFid/:flickrId', cors, function (req, res) {
   var id = req.params.flickrId;
   controllers.flickr.deleteIfDoesntExistOnFlickr(res, id);
 });
-router.get('/photos/updateFid/:flickrId', function (req, res) {
+router.get('/photos/updateFid/:flickrId', cors, function (req, res) {
   var id = req.params.flickrId;
   controllers.flickr.updatePhoto(res, id);
 });
 
-// removed cors for 'admin' function
-router.get('/photos/undeleteFid/:flickrId', function (req, res) {
+router.get('/photos/undeleteFid/:flickrId', cors, function (req, res) {
   var id = req.params.flickrId;
   controllers.photos.getPhotoByFlickrId(res, id, function(err,data){
     if(err){
