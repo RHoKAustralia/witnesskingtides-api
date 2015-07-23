@@ -45,7 +45,43 @@ router.post('/photos', cors, function (req, res) {
   var contentType = req.get('Content-Type');
   controllers.photos.uploadPhoto(req, res, contentType);
 });
+router.get('/admin/photos/:page', cors, function (req, res) {
+  var pageNo = req.params.page ? parseInt(req.params.page) : 1;
+  if(isNaN(pageNo) || pageNo < 1) pageNo = 1;
+  var params = {};
+  params = req.query;
+  params.page = pageNo || 1;
+  var currPage = params.page;
+  var perPage = params.count || 100;
+  params.search = {'$or': [{deleted: {$eq: null}}, {deleted: false}]};
+  var queryString = '';
+  if(params.deleted){
+    params.search = {deleted: true};
+  }
+  console.log(params);
+  controllers.photos.getPhotosCount(res, params, function(err, count){
+    if (err) {
+      if(cb) cb(err);
+      res.json(500, err);
+      return;
+    }
+    controllers.photos.getPhotos(res, params, function(err, data){
+      if (err) {
+        if(cb) cb(err);
+        res.json(500, err);
+        return;
+      }
 
+      res.json({
+        page: currPage,
+        pages: Math.ceil(count / perPage),
+        perpage: perPage,
+        photo: data,
+        total: count
+      });
+    });
+  });
+});
 router.get('/admin', function (req, res) {
   var params = {};
   params = req.query;
