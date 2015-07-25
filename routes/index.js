@@ -5,6 +5,7 @@ var router = express.Router();
 var conf = require('../lib/config');
 var cors = require('../lib/cors');
 var base58 = require('../lib/base58');
+var oauthshim = require('oauth-shim');
 
 var requireController = function (name) {
   return require('../controllers/' + name);
@@ -15,6 +16,19 @@ var controllers = {
   photos: requireController('photos'),
   flickr: requireController('flickr')
 };
+
+router.all('/oauthproxy', function(req,res){
+  oauthshim(req,res);
+});
+var OAUTHSHIM_CREDS = {};
+OAUTHSHIM_CREDS[''+conf.get('FLICKR_KEY')]   = conf.get('FLICKR_SECRET');
+oauthshim.init(OAUTHSHIM_CREDS);
+
+router.post('/admin/isFlickrAdmin', cors, function (req, res) {
+  var user = req.body.user || req.body['user[]'];
+  controllers.flickr.isFlickrAdmin(res, user);
+});
+
 
 router.get('/tide_events', cors, function (req, res) {
   controllers.tide_events.getAllTideEvents(res);
@@ -45,6 +59,7 @@ router.post('/photos', cors, function (req, res) {
   var contentType = req.get('Content-Type');
   controllers.photos.uploadPhoto(req, res, contentType);
 });
+
 router.get('/admin/photos/:page', cors, function (req, res) {
   var pageNo = req.params.page ? parseInt(req.params.page) : 1;
   if(isNaN(pageNo) || pageNo < 1) pageNo = 1;

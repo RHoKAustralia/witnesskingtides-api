@@ -145,3 +145,29 @@ exports.getPhoto = function (res, id, cb) {
     });
   });
 };
+
+exports.isFlickrAdmin = function(res, users){
+  var flickrPage = conf.get('FLICKR_USER_ID').trim();
+  var regex = new RegExp('^' + flickrPage + '$', 'gi');
+  if(typeof(users) === 'string'){
+    users = [users];
+  }
+  if(typeof(users) === 'object' && typeof(users.length) === 'undefined'){
+    users = [];
+  }
+
+  var authorized = false;
+  if(flickrPage !== ''){
+    users.forEach(function(user){
+      if(!authorized && regex.test(user.trim())){
+        authorized = true;
+      }
+    });
+  }
+  if(authorized){
+    res.json('Ok');
+  }
+  else{
+    res.status(401).json('Not authorized');
+  }
+};
