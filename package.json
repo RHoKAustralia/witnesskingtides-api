@@ -35,7 +35,8 @@
     "multiparty": "latest",
     "nconf": "latest",
     "flickr-with-uploads": "latest",
-    "flickrapi": "latest"
+    "flickrapi": "latest",
+    "oauth-shim": "latest"
   },
   "devDependencies": {
     "mocha": "~1.18.x",
